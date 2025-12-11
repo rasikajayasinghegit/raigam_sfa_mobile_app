@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, BellSimple } from 'phosphor-react-native';
+import { ArrowLeft, SignOut } from 'phosphor-react-native';
 import { colors } from '../theme/colors';
 
 type Props = {
@@ -29,25 +29,15 @@ export function AppHeader({ title, onBack, hideBack, rightIcon, onRightPress }: 
     </TouchableOpacity>
   );
 
-  const Right =
-    rightIcon !== undefined ? (
-      <TouchableOpacity
-        onPress={onRightPress}
-        disabled={!onRightPress}
-        style={[styles.iconButton, !onRightPress && styles.iconDisabled]}
-        activeOpacity={0.7}
-      >
-        {rightIcon}
-      </TouchableOpacity>
-    ) : (
-      <TouchableOpacity
-        onPress={onRightPress}
-        disabled={!onRightPress}
-        style={[styles.iconButton, !onRightPress && styles.iconDisabled]}
-        activeOpacity={0.7}
-      >
-        <BellSimple size={22} color={colors.text} weight="regular" />
-      </TouchableOpacity>
+  const Right = (
+    <TouchableOpacity
+      onPress={onRightPress}
+      disabled={!onRightPress}
+      style={[styles.iconButton, !onRightPress && styles.iconDisabled]}
+      activeOpacity={0.7}
+    >
+      {rightIcon ? rightIcon : <SignOut size={22} color={colors.text} weight="regular" />}
+    </TouchableOpacity>
   );
 
   const paddingTop = Math.max(6, insets.top);

@@ -37,7 +37,7 @@ export function ClockWidget() {
       <View style={styles.clock}>
         {ticks.map(i => {
           const isHour = i % 5 === 0;
-          const angle = (i / 60) * 360;
+          const angle = (i / 60) * 360 - 90;
           const radius = 92;
           const size = isHour ? 6 : 3;
           return (
@@ -60,9 +60,15 @@ export function ClockWidget() {
           );
         })}
 
-        <View style={[styles.handMinute, { transform: [{ rotate: `${minuteDeg}deg` }] }]} />
-        <View style={[styles.handHour, { transform: [{ rotate: `${hourDeg}deg` }] }]} />
-        <View style={[styles.handSecond, { transform: [{ rotate: `${secondDeg}deg` }] }]} />
+        <View style={[styles.handContainer, { transform: [{ rotate: `${hourDeg - 90}deg` }] }]}>
+          <View style={styles.handHour} />
+        </View>
+        <View style={[styles.handContainer, { transform: [{ rotate: `${minuteDeg - 90}deg` }] }]}>
+          <View style={styles.handMinute} />
+        </View>
+        <View style={[styles.handContainer, { transform: [{ rotate: `${secondDeg - 90}deg` }] }]}>
+          <View style={styles.handSecond} />
+        </View>
 
         <View style={styles.centerDot} />
       </View>
@@ -93,15 +99,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: 6,
   },
+  handContainer: {
+    position: 'absolute',
+    width: 0,
+    height: 0,
+    left: 100,
+    top: 100,
+  },
   handHour: {
     position: 'absolute',
     width: 60,
     height: 8,
     backgroundColor: '#111',
     borderRadius: 8,
-    transformOrigin: 'left center',
-    left: 100,
-    top: 100 - 4,
+    left: 0,
+    top: -4,
   },
   handMinute: {
     position: 'absolute',
@@ -109,9 +121,8 @@ const styles = StyleSheet.create({
     height: 6,
     backgroundColor: '#111',
     borderRadius: 6,
-    transformOrigin: 'left center',
-    left: 100,
-    top: 100 - 3,
+    left: 0,
+    top: -3,
   },
   handSecond: {
     position: 'absolute',
@@ -119,9 +130,8 @@ const styles = StyleSheet.create({
     height: 2,
     backgroundColor: '#e11d48',
     borderRadius: 2,
-    transformOrigin: 'left center',
-    left: 100,
-    top: 100 - 1,
+    left: 0,
+    top: -1,
   },
   centerDot: {
     width: 12,
@@ -130,8 +140,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#e11d48',
   },
   dateText: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#0f172a',
-    fontWeight: '600',
+    fontWeight: '700',
+    marginTop: 4,
   },
 });

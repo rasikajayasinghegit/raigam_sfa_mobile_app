@@ -102,6 +102,7 @@ function AppBody(): React.JSX.Element {
         loading={dayLoading}
         onStart={options => startDay(options)}
         onEnd={options => endDay(options)}
+        onLogout={logout}
         getStartPayload={() => buildPayload(true)}
         getEndPayload={() => buildPayload(false)}
       />

@@ -3,12 +3,12 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Logo } from '../components/Logo';
 import { ProgressBar } from '../components/ProgressBar';
 import { PULSE_DURATION_MS } from '../config/appConfig';

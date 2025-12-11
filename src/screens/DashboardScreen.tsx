@@ -1,18 +1,14 @@
 import React, { useMemo, useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import {
   HandWaving,
   Target,
   ClipboardText,
   Storefront,
   Receipt,
+  PlayCircle,
+  StopCircle,
+  Clock,
 } from 'phosphor-react-native';
 import { LoginPayload } from '../services/auth';
 import { colors } from '../theme/colors';
@@ -20,6 +16,7 @@ import { AppHeader } from '../components/AppHeader';
 import { DayCycleState } from '../services/dayCycle';
 import { DayStatus } from '../hooks/useDayCycle';
 import { ScreenBackground } from '../components/ScreenBackground';
+import { LogoutConfirm } from '../components/LogoutConfirm';
 
 type Props = {
   user: LoginPayload;
@@ -43,6 +40,7 @@ export function DashboardScreen({
   onEndDay,
 }: Props) {
   const [dayMessage, setDayMessage] = useState<string | null>(null);
+  const [showLogout, setShowLogout] = useState(false);
 
   const quickActions = [
     { label: 'Welcome', icon: <HandWaving size={24} color={colors.text} weight="regular" /> },
@@ -73,12 +71,16 @@ export function DashboardScreen({
     return 'In progress';
   }, [dayStatus]);
 
-  const windowText = 'Start window: 00:00 - 12:00 • 24h validity';
+  const statusHelper = useMemo(() => {
+    if (dayStatus === 'not-started') return 'Start your shift to unlock your route.';
+    if (dayStatus === 'completed') return 'Day closed. Great work staying on track.';
+    return 'Day running. Remember to end before you finish.';
+  }, [dayStatus]);
 
   const formatTime = (value?: string | null) => {
     if (!value) return '-';
     const d = new Date(value);
-    return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
+    return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   };
 
   const handleStart = async () => {
@@ -104,7 +106,13 @@ export function DashboardScreen({
   return (
     <SafeAreaView style={styles.container}>
       <ScreenBackground />
-      <AppHeader title="Dashboard" hideBack />
+      <AppHeader
+        title="Dashboard"
+        hideBack
+        onRightPress={() => {
+          setShowLogout(true);
+        }}
+      />
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -114,20 +122,11 @@ export function DashboardScreen({
           <Text style={styles.subtitle}>{user.personalName || user.userName}</Text>
         </View>
 
-        <View style={styles.quickGrid}>
-          {quickActions.map(item => (
-            <View key={item.label} style={styles.quickCard}>
-              <View style={styles.quickIcon}>{item.icon}</View>
-              <Text style={styles.quickLabel}>{item.label}</Text>
-            </View>
-          ))}
-        </View>
-
         <View style={styles.dayCard}>
           <View style={styles.dayHeader}>
             <View>
               <Text style={styles.sectionTitle}>Day Cycle</Text>
-              <Text style={styles.windowText}>{windowText}</Text>
+              <Text style={styles.windowText}>{statusHelper}</Text>
             </View>
             <View
               style={[
@@ -154,15 +153,36 @@ export function DashboardScreen({
             </View>
           </View>
 
-          <View style={styles.dayGrid}>
-            <View style={styles.dayItem}>
-              <Text style={styles.label}>Start Time</Text>
-              <Text style={styles.value}>{formatTime(dayState?.startTime)}</Text>
+          <View style={styles.timeline}>
+            <View style={styles.timeBlock}>
+              <View style={styles.timeIcon}>
+                <PlayCircle size={22} color={colors.primary} weight="duotone" />
+              </View>
+              <View style={styles.timeText}>
+                <Text style={styles.label}>Started</Text>
+                <Text style={styles.value}>{formatTime(dayState?.startTime)}</Text>
+              </View>
             </View>
-            <View style={styles.dayItem}>
-              <Text style={styles.label}>End Time</Text>
-              <Text style={styles.value}>{formatTime(dayState?.endTime)}</Text>
+            <View style={styles.connector}>
+              <View style={styles.dot} />
+              <View style={styles.line} />
             </View>
+            <View style={styles.timeBlock}>
+              <View style={[styles.timeIcon, styles.endIcon]}>
+                <StopCircle size={22} color="#1e293b" weight="duotone" />
+              </View>
+              <View style={styles.timeText}>
+                <Text style={styles.label}>Ended</Text>
+                <Text style={styles.value}>{formatTime(dayState?.endTime)}</Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.tip}>
+            <Clock size={18} color={colors.text} weight="duotone" />
+            <Text style={styles.tipText}>
+              Warning: Please end your day before leaving. Auto-close runs at 23:59.
+            </Text>
           </View>
 
           {dayMessage ? <Text style={styles.dayMessage}>{dayMessage}</Text> : null}
@@ -199,25 +219,25 @@ export function DashboardScreen({
           </View>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Session Details</Text>
-          {details.map(item => (
-            <View key={item.label} style={styles.row}>
-              <Text style={styles.label}>{item.label}</Text>
-              <Text style={styles.value}>{String(item.value)}</Text>
+        <View style={styles.quickGrid}>
+          {quickActions.map(item => (
+            <View key={item.label} style={styles.quickCard}>
+              <View style={styles.quickIcon}>{item.icon}</View>
+              <Text style={styles.quickLabel}>{item.label}</Text>
             </View>
           ))}
         </View>
 
-        <TouchableOpacity
-          style={[styles.logoutButton, loading && styles.logoutButtonDisabled]}
-          onPress={onLogout}
-          disabled={loading}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.logoutText}>{loading ? 'Signing out...' : 'Logout'}</Text>
-        </TouchableOpacity>
+        <View style={{ height: 40 }} />
       </ScrollView>
+      <LogoutConfirm
+        visible={showLogout}
+        onConfirm={() => {
+          setShowLogout(false);
+          onLogout();
+        }}
+        onCancel={() => setShowLogout(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -275,17 +295,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.text,
   },
-  card: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: colors.shadow,
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
-    gap: 8,
-  },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
@@ -308,12 +317,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     maxWidth: '60%',
     textAlign: 'right',
-  },
-  logoutButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
   },
   dayCard: {
     backgroundColor: colors.card,
@@ -367,16 +370,63 @@ const styles = StyleSheet.create({
   statusTextSuccess: {
     color: '#15803d',
   },
-  dayGrid: {
+  timeline: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
     gap: 12,
+    paddingVertical: 4,
   },
-  dayItem: {
+  timeBlock: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     backgroundColor: '#f8fafc',
     borderRadius: 12,
     padding: 12,
+  },
+  timeIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  endIcon: {
+    backgroundColor: '#e2e8f0',
+  },
+  timeText: {
+    flex: 1,
+  },
+  connector: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.primary,
+  },
+  line: {
+    width: 2,
+    height: 28,
+    backgroundColor: colors.border,
+  },
+  tip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 12,
+  },
+  tipText: {
+    color: colors.text,
+    fontSize: 13,
+    flex: 1,
   },
   dayMessage: {
     color: colors.textMuted,
@@ -412,13 +462,5 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.6,
-  },
-  logoutButtonDisabled: {
-    opacity: 0.7,
-  },
-  logoutText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
   },
 });

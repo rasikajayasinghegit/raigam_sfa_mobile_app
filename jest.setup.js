@@ -30,3 +30,16 @@ jest.mock('react-native-geolocation-service', () => ({
     success({ coords: { latitude: 0, longitude: 0 } }),
   ),
 }), { virtual: true });
+jest.mock(
+  'react-native-immersive-mode',
+  () => ({
+    fullLayout: jest.fn(),
+    setBarMode: jest.fn(),
+    setBarColor: jest.fn(),
+    setBarDefaultColor: jest.fn(),
+    setBarStyle: jest.fn(),
+    setBarTranslucent: jest.fn(),
+    addEventListener: jest.fn(() => ({ remove: jest.fn() })),
+  }),
+  { virtual: true },
+);
