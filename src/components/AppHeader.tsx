@@ -6,7 +6,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useSafeAreaInsets, initialWindowMetrics } from 'react-native-safe-area-context';
+import {
+  useSafeAreaInsets,
+  initialWindowMetrics,
+} from 'react-native-safe-area-context';
 import { ArrowLeft, SignOut } from 'phosphor-react-native';
 import { ColorPalette } from '../theme/colors';
 import { useThemeMode } from '../context/ThemeContext';
