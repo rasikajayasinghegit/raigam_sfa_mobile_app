@@ -8,7 +8,6 @@ import {
   Receipt,
   PlayCircle,
   StopCircle,
-  Clock,
 } from 'phosphor-react-native';
 import { LoginPayload } from '../services/auth';
 import { colors } from '../theme/colors';
@@ -17,11 +16,11 @@ import { DayCycleState } from '../services/dayCycle';
 import { DayStatus } from '../hooks/useDayCycle';
 import { ScreenBackground } from '../components/ScreenBackground';
 import { LogoutConfirm } from '../components/LogoutConfirm';
+import { StatusAlert } from '../components/StatusAlert';
 
 type Props = {
   user: LoginPayload;
   onLogout: () => Promise<void>;
-  loading: boolean;
   dayState: DayCycleState | null;
   dayStatus: DayStatus;
   dayLoading: boolean;
@@ -32,7 +31,6 @@ type Props = {
 export function DashboardScreen({
   user,
   onLogout,
-  loading,
   dayState,
   dayStatus,
   dayLoading,
@@ -48,21 +46,6 @@ export function DashboardScreen({
     { label: 'PC Target', icon: <ClipboardText size={24} color={colors.text} weight="regular" /> },
     { label: 'Outlets', icon: <Storefront size={24} color={colors.text} weight="regular" /> },
     { label: 'Invoice', icon: <Receipt size={24} color={colors.text} weight="regular" /> },
-  ];
-
-  const details: Array<{ label: string; value: string | number | boolean }> = [
-    { label: 'User Name', value: user.userName },
-    { label: 'Name', value: user.personalName },
-    { label: 'Role', value: `${user.role} (${user.roleId})` },
-    { label: 'Sub Role', value: `${user.subRole} (${user.subRoleId})` },
-    { label: 'User Type', value: `${user.userType} (${user.userTypeId})` },
-    { label: 'Territory', value: `${user.territoryName} (${user.territoryId})` },
-    { label: 'Agency', value: user.agencyCode },
-    { label: 'Range', value: `${user.range} (${user.rangeId})` },
-    { label: 'GPS Status', value: user.gpsStatus },
-    { label: 'Server Time', value: user.serverTime },
-    { label: 'User Id', value: user.userId },
-    { label: 'User Agency Id', value: user.userAgencyId },
   ];
 
   const dayStatusLabel = useMemo(() => {
@@ -178,12 +161,11 @@ export function DashboardScreen({
             </View>
           </View>
 
-          <View style={styles.tip}>
-            <Clock size={18} color={colors.text} weight="duotone" />
-            <Text style={styles.tipText}>
-              Warning: Please end your day before leaving. Auto-close runs at 23:59.
-            </Text>
-          </View>
+          <StatusAlert
+            variant="warning"
+            title="Warning"
+            message="Please end your day before leaving."
+          />
 
           {dayMessage ? <Text style={styles.dayMessage}>{dayMessage}</Text> : null}
 
@@ -414,19 +396,6 @@ const styles = StyleSheet.create({
     width: 2,
     height: 28,
     backgroundColor: colors.border,
-  },
-  tip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: '#f8fafc',
-    borderRadius: 12,
-    padding: 12,
-  },
-  tipText: {
-    color: colors.text,
-    fontSize: 13,
-    flex: 1,
   },
   dayMessage: {
     color: colors.textMuted,

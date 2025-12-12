@@ -21,7 +21,7 @@ export async function loadSession(): Promise<{
   try {
     const parsed = JSON.parse(raw) as LoginPayload;
     return { session: parsed, remember };
-  } catch (error) {
+  } catch {
     return { session: null, remember };
   }
 }

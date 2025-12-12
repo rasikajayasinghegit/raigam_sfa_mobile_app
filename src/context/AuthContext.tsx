@@ -1,4 +1,12 @@
-import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { login as loginRequest, LoginPayload } from '../services/auth';
 import { clearSession, loadSession, saveSession } from '../storage/sessionStorage';
 import { setAuthTokens } from '../services/http';
@@ -67,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const login = async (username: string, password: string, rememberMe: boolean) => {
+  const login = useCallback(async (username: string, password: string, rememberMe: boolean) => {
     setLoading(true);
     setError(null);
     try {
@@ -115,9 +123,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     setLoading(true);
     try {
       const userId = session?.userId;
@@ -131,7 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [session]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -142,7 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       logout,
     }),
-    [session, loading, error, remember],
+    [session, loading, error, remember, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -10,7 +10,7 @@ try {
   if (ImmersiveMode && ImmersiveMode.default) {
     ImmersiveMode = ImmersiveMode.default;
   }
-} catch (error) {
+} catch {
   ImmersiveMode = null;
 }
 
@@ -21,7 +21,7 @@ export function enableImmersiveMode() {
     // FullSticky keeps the nav bar hidden while allowing swipe-to-reveal.
     ImmersiveMode.setBarMode?.('FullSticky');
     ImmersiveMode.setBarTranslucent?.(true);
-  } catch (error) {
+  } catch {
     // no-op: immersive mode is optional
   }
 }
@@ -32,7 +32,7 @@ export function disableImmersiveMode() {
     ImmersiveMode.setBarMode?.('Normal');
     ImmersiveMode.fullLayout?.(false);
     ImmersiveMode.setBarTranslucent?.(false);
-  } catch (error) {
+  } catch {
     // no-op
   }
 }

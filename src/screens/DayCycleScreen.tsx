@@ -45,14 +45,14 @@ type Props = {
 export function DayCycleScreen({
   user,
   status,
-  state,
+  state: _state,
   loading,
   onStart,
-  onEnd,
+  onEnd: _onEnd,
   onLogout,
   onContinue,
   getStartPayload,
-  getEndPayload,
+  getEndPayload: _getEndPayload,
 }: Props) {
   const [message, setMessage] = useState<string | null>(null);
   const [showLogout, setShowLogout] = useState(false);
@@ -73,19 +73,6 @@ export function DayCycleScreen({
       onContinue?.();
     } catch (err: any) {
       setMessage(err?.message || 'Unable to start day.');
-    }
-  };
-
-  const handleEnd = async () => {
-    const { options } = await getEndPayload();
-
-    setMessage(null);
-    try {
-      await onEnd(options);
-      setMessage('Day ended.');
-      onContinue?.();
-    } catch (err: any) {
-      setMessage(err?.message || 'Unable to end day.');
     }
   };
 

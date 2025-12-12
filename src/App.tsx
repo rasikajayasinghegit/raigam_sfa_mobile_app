@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Linking } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { DashboardScreen } from './screens/DashboardScreen';
+import { NavigationContainer } from '@react-navigation/native';
 import { DayCycleScreen } from './screens/DayCycleScreen';
 import { LoginScreen } from './screens/LoginScreen';
 import { SplashScreen } from './screens/SplashScreen';
@@ -11,6 +11,9 @@ import { useVersionGate } from './hooks/useVersionGate';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { useDayCycle } from './hooks/useDayCycle';
 import { getCurrentLocation } from './services/location';
+import { disableImmersiveMode, enableImmersiveMode } from './utils/immersive';
+import { MainTabs } from './navigation/MainTabs';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function AppBody(): React.JSX.Element {
   const { status, statusMessage, progress, versionInfo, retry, appVersion } = useVersionGate();
@@ -111,10 +114,9 @@ function AppBody(): React.JSX.Element {
 
   if (session) {
     return (
-      <DashboardScreen
+      <MainTabs
         user={session}
         onLogout={logout}
-        loading={authLoading}
         dayState={dayState}
         dayStatus={dayStatus}
         dayLoading={dayLoading}
@@ -137,11 +139,22 @@ function AppBody(): React.JSX.Element {
 }
 
 export default function App(): React.JSX.Element {
+  useEffect(() => {
+    enableImmersiveMode();
+    return () => {
+      disableImmersiveMode();
+    };
+  }, []);
+
   return (
-    <SafeAreaProvider>
-      <AuthProvider>
-        <AppBody />
-      </AuthProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <AuthProvider>
+            <AppBody />
+          </AuthProvider>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

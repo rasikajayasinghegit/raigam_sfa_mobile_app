@@ -103,7 +103,6 @@ export async function startDay(
   userId: number,
   options: DayActionOptions = {},
 ): Promise<DayCycleState> {
-  const now = new Date();
   const { state: current } = await loadDayCycle(userId);
 
   if (current?.startTime && !current.endTime) {
