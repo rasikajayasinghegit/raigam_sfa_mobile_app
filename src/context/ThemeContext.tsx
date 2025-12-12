@@ -58,9 +58,8 @@ export function ThemeProvider({ children, storageKey }: ThemeProviderProps) {
   }, [key]);
 
   useEffect(() => {
-    if (!hydrated) return;
     applyThemeColors(mode);
-  }, [mode, hydrated]);
+  }, [mode]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -77,10 +76,6 @@ export function ThemeProvider({ children, storageKey }: ThemeProviderProps) {
     }),
     [mode],
   );
-
-  if (!hydrated) {
-    return null;
-  }
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

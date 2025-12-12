@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
-import { Linking } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import React, { useCallback, useEffect } from 'react';
+import { Linking, StatusBar, Platform } from 'react-native';
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { DayCycleScreen } from './screens/DayCycleScreen';
 import { LoginScreen } from './screens/LoginScreen';
@@ -16,14 +16,23 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { RootStackParamList } from './navigation/types';
-import { ThemeProvider } from './context/ThemeContext';
+import { ThemeProvider, useThemeMode } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
+import { disableImmersiveMode, enableImmersiveMode } from './utils/immersive';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 function AppBody(): React.JSX.Element {
-  const { status, statusMessage, progress, versionInfo, retry, appVersion } = useVersionGate();
-  const { login, logout, loading: authLoading, error: authError, remember, session } = useAuth();
+  const { status, statusMessage, progress, versionInfo, retry, appVersion } =
+    useVersionGate();
+  const {
+    login,
+    logout,
+    loading: authLoading,
+    error: authError,
+    remember,
+    session,
+  } = useAuth();
   if (__DEV__ && session) {
     // eslint-disable-next-line no-console
     console.log('Logged in user session', session);
@@ -154,9 +163,16 @@ function AppBody(): React.JSX.Element {
 }
 
 export default function App(): React.JSX.Element {
+  useEffect(() => {
+    enableImmersiveMode();
+    return () => {
+      disableImmersiveMode();
+    };
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <NavigationContainer>
           <AuthProvider>
             <ThemeContainer>
@@ -174,7 +190,20 @@ function ThemeContainer({ children }: { children: React.ReactNode }) {
   const storageKey = session ? `user-${session.userId}` : undefined;
   return (
     <ThemeProvider storageKey={storageKey}>
+      <AppStatusBar />
       <ToastProvider>{children}</ToastProvider>
     </ThemeProvider>
+  );
+}
+
+function AppStatusBar() {
+  const { mode } = useThemeMode();
+  return (
+    <StatusBar
+      animated
+      translucent={Platform.OS === 'ios'}
+      backgroundColor="#ffffff"
+      barStyle={mode === 'dark' ? 'light-content' : 'dark-content'}
+    />
   );
 }

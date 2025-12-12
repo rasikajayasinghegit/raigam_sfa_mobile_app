@@ -1,7 +1,12 @@
-import React, { ReactNode } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useMemo } from 'react';
+import React, { ReactNode, useCallback, useMemo } from 'react';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets, initialWindowMetrics } from 'react-native-safe-area-context';
 import { ArrowLeft, SignOut } from 'phosphor-react-native';
 import { ColorPalette } from '../theme/colors';
 import { useThemeMode } from '../context/ThemeContext';
@@ -17,60 +22,64 @@ type Props = {
   onSecondaryRightPress?: () => void;
 };
 
-// Reusable top header with centered title and optional actions
+const SIDE_WIDTH = 104;
+const ICON_SIZE = 22;
+
 const createStyles = (palette: ColorPalette) =>
   StyleSheet.create({
-    safeArea: {
+    shell: {
       backgroundColor: palette.surface,
+      borderBottomColor: palette.divider,
+      borderBottomWidth: StyleSheet.hairlineWidth,
     },
-    container: {
-      position: 'relative',
-      minHeight: 40,
+    bar: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingHorizontal: 18,
-      paddingVertical: 8,
-      backgroundColor: palette.surface,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      borderBottomColor: palette.divider,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      minHeight: 56,
     },
     titleWrapper: {
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      paddingHorizontal: 80,
+      flex: 1,
+      paddingHorizontal: 12,
       alignItems: 'center',
       justifyContent: 'center',
     },
     title: {
-      fontSize: 16,
+      fontSize: 17,
       fontWeight: '700',
       color: palette.text,
       textAlign: 'center',
-      backgroundColor: 'transparent',
+    },
+    side: {
+      minWidth: SIDE_WIDTH,
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+    },
+    sideRight: {
+      justifyContent: 'flex-end',
     },
     actions: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: 10,
     },
     iconButton: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
+      width: 42,
+      height: 42,
+      borderRadius: 21,
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: palette.surfaceAlt,
     },
     iconDisabled: {
-      opacity: 0.6,
+      opacity: 0.55,
     },
     iconPlaceholder: {
-      width: 44,
-      height: 44,
+      width: 42,
+      height: 42,
+      borderRadius: 21,
     },
   });
 
@@ -85,37 +94,17 @@ export function AppHeader({
 }: Props) {
   const { colors } = useThemeMode();
   const styles = useThemedStyles(createStyles);
+  const insets = useSafeAreaInsets();
+  const topInset = Math.max(insets.top, initialWindowMetrics?.insets.top ?? 0);
 
-  const Left = hideBack ? (
-    <View style={styles.iconPlaceholder} />
-  ) : (
-    <TouchableOpacity
-      onPress={onBack}
-      disabled={!onBack}
-      style={[styles.iconButton, !onBack && styles.iconDisabled]}
-      activeOpacity={0.7}
-    >
-      <ArrowLeft size={22} color={colors.text} weight="regular" />
-    </TouchableOpacity>
-  );
-
-  const finalRightIcon = useMemo(
-    () =>
-      rightIcon ? (
-        rightIcon
-      ) : (
-        <SignOut size={22} color={colors.text} weight="regular" />
-      ),
-    [rightIcon, colors.text],
-  );
-
-  const renderAction = React.useCallback(
+  const renderIconButton = useCallback(
     (icon: ReactNode, handler?: () => void) => (
       <TouchableOpacity
         onPress={handler}
         disabled={!handler}
         style={[styles.iconButton, !handler && styles.iconDisabled]}
-        activeOpacity={0.7}
+        activeOpacity={0.85}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
         {icon}
       </TouchableOpacity>
@@ -123,47 +112,58 @@ export function AppHeader({
     [styles.iconButton, styles.iconDisabled],
   );
 
-  const Right = useMemo(() => {
-    if (secondaryRightIcon || onRightPress || rightIcon) {
-      return (
-        <View style={styles.actions}>
-          {secondaryRightIcon
-            ? renderAction(secondaryRightIcon, onSecondaryRightPress)
-            : null}
-          {renderAction(finalRightIcon, onRightPress)}
-        </View>
+  const LeftAction = hideBack
+    ? null
+    : renderIconButton(
+        <ArrowLeft size={ICON_SIZE} color={colors.text} weight="regular" />,
+        onBack,
       );
+
+  const finalRightIcon = useMemo(
+    () =>
+      rightIcon ? (
+        rightIcon
+      ) : (
+        <SignOut size={ICON_SIZE} color={colors.text} weight="regular" />
+      ),
+    [rightIcon, colors.text],
+  );
+
+  const RightActions = useMemo(() => {
+    if (!secondaryRightIcon && !rightIcon && !onRightPress) {
+      return null;
     }
-    return <View style={styles.iconPlaceholder} />;
+    return (
+      <View style={styles.actions}>
+        {secondaryRightIcon
+          ? renderIconButton(secondaryRightIcon, onSecondaryRightPress)
+          : null}
+        {renderIconButton(finalRightIcon, onRightPress)}
+      </View>
+    );
   }, [
-    styles.actions,
-    styles.iconPlaceholder,
-    secondaryRightIcon,
-    onSecondaryRightPress,
     finalRightIcon,
     onRightPress,
-    renderAction,
+    renderIconButton,
     rightIcon,
+    secondaryRightIcon,
+    onSecondaryRightPress,
+    styles.actions,
   ]);
 
-  const paddingBottom = 6;
-
   return (
-    <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <View
-        style={[
-          styles.container,
-          {
-            paddingBottom,
-          },
-        ]}
-      >
-        {Left}
-        {Right}
+    <SafeAreaView style={[styles.shell, { paddingTop: topInset }]}>
+      <View style={styles.bar}>
+        <View style={styles.side}>
+          {LeftAction || <View style={styles.iconPlaceholder} />}
+        </View>
         <View pointerEvents="none" style={styles.titleWrapper}>
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
             {title}
           </Text>
+        </View>
+        <View style={[styles.side, styles.sideRight]}>
+          {RightActions || <View style={styles.iconPlaceholder} />}
         </View>
       </View>
     </SafeAreaView>
