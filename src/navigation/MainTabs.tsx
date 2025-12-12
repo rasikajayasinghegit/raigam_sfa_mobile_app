@@ -70,8 +70,8 @@ const CustomTabBar = ({
   const animations = useRef<Record<string, Animated.Value>>({});
   const insets = useSafeAreaInsets();
   const shellPaddingBottom = 0;
-  const ACTIVE_COLOR = colors.primary || '#2563eb';
-  const INACTIVE_COLOR = colors.textMuted || '#94a3b8';
+  const ACTIVE_COLOR = colors.primary;
+  const INACTIVE_COLOR = colors.textSubtle;
 
   return (
     <View style={[styles.tabShell, { paddingBottom: shellPaddingBottom }]}>
@@ -222,9 +222,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     minHeight: 64,
     borderRadius: 0,
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderColor: 'rgba(15,23,42,0.08)',
+    borderColor: colors.divider,
     elevation: 18,
     shadowColor: colors.shadow,
     shadowOpacity: 0.18,

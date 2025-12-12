@@ -12,6 +12,7 @@ import { AppHeader } from '../components/AppHeader';
 import { ScreenBackground } from '../components/ScreenBackground';
 import { tabStyles } from './tabStyles';
 import { LoginPayload } from '../services/auth';
+import { colors, gradients } from '../theme/colors';
 
 type Props = {
   onLogout: () => Promise<void>;
@@ -27,9 +28,9 @@ export function OutletScreen({ onLogout, user }: Props) {
         contentContainerStyle={tabStyles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        <LinearGradient colors={['#e1fff4', '#f5fffb']} style={tabStyles.hero}>
+        <LinearGradient colors={gradients.outletHero} style={tabStyles.hero}>
           <View style={tabStyles.heroIcon}>
-            <Storefront size={26} color="#0f766e" weight="duotone" />
+            <Storefront size={26} color={colors.info} weight="duotone" />
           </View>
           <View style={tabStyles.heroText}>
             <Text style={tabStyles.heroTitle}>Outlet coverage</Text>
@@ -52,21 +53,21 @@ export function OutletScreen({ onLogout, user }: Props) {
               style={tabStyles.actionButton}
               activeOpacity={0.9}
             >
-              <MapPin size={22} color="#0f766e" weight="duotone" />
+              <MapPin size={22} color={colors.info} weight="duotone" />
               <Text style={tabStyles.actionText}>Nearby</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={tabStyles.actionButton}
               activeOpacity={0.9}
             >
-              <UserPlus size={22} color="#0f766e" weight="duotone" />
+              <UserPlus size={22} color={colors.info} weight="duotone" />
               <Text style={tabStyles.actionText}>Add outlet</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={tabStyles.actionButton}
               activeOpacity={0.9}
             >
-              <Compass size={22} color="#0f766e" weight="duotone" />
+              <Compass size={22} color={colors.info} weight="duotone" />
               <Text style={tabStyles.actionText}>Route</Text>
             </TouchableOpacity>
           </View>

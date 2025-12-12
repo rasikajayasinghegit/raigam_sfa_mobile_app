@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import { colors } from '../theme/colors';
 
 function getAngles(date: Date) {
   const seconds = date.getSeconds();
@@ -48,7 +49,7 @@ export function ClockWidget() {
                 {
                   width: size,
                   height: size,
-                  backgroundColor: '#0f172a',
+                  backgroundColor: colors.text,
                   opacity: isHour ? 0.9 : 0.6,
                   transform: [
                     { rotate: `${angle}deg` },
@@ -86,10 +87,10 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: '#f8f9fb',
+    backgroundColor: colors.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 60,
     height: 8,
-    backgroundColor: '#111',
+    backgroundColor: colors.text,
     borderRadius: 8,
     left: 0,
     top: -4,
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 80,
     height: 6,
-    backgroundColor: '#111',
+    backgroundColor: colors.text,
     borderRadius: 6,
     left: 0,
     top: -3,
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 90,
     height: 2,
-    backgroundColor: '#e11d48',
+    backgroundColor: colors.danger,
     borderRadius: 2,
     left: 0,
     top: -1,
@@ -137,11 +138,11 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#e11d48',
+    backgroundColor: colors.danger,
   },
   dateText: {
     fontSize: 16,
-    color: '#0f172a',
+    color: colors.text,
     fontWeight: '700',
     marginTop: 4,
   },

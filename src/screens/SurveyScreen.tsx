@@ -6,6 +6,7 @@ import { AppHeader } from '../components/AppHeader';
 import { ScreenBackground } from '../components/ScreenBackground';
 import { tabStyles } from './tabStyles';
 import { LoginPayload } from '../services/auth';
+import { colors, gradients } from '../theme/colors';
 
 type Props = {
   onLogout: () => Promise<void>;
@@ -21,9 +22,9 @@ export function SurveyScreen({ onLogout, user }: Props) {
         contentContainerStyle={tabStyles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        <LinearGradient colors={['#e7e9ff', '#f7f7ff']} style={tabStyles.hero}>
+        <LinearGradient colors={gradients.surveyHero} style={tabStyles.hero}>
           <View style={tabStyles.heroIcon}>
-            <ClipboardText size={26} color="#4338ca" weight="duotone" />
+            <ClipboardText size={26} color={colors.secondary} weight="duotone" />
           </View>
           <View style={tabStyles.heroText}>
             <Text style={tabStyles.heroTitle}>Customer surveys</Text>
@@ -42,15 +43,15 @@ export function SurveyScreen({ onLogout, user }: Props) {
           </View>
           <View style={tabStyles.actionRow}>
             <TouchableOpacity style={tabStyles.actionButton} activeOpacity={0.9}>
-              <PencilSimple size={22} color="#4338ca" weight="duotone" />
+              <PencilSimple size={22} color={colors.secondary} weight="duotone" />
               <Text style={tabStyles.actionText}>New survey</Text>
             </TouchableOpacity>
             <TouchableOpacity style={tabStyles.actionButton} activeOpacity={0.9}>
-              <ClockCounterClockwise size={22} color="#4338ca" weight="duotone" />
+              <ClockCounterClockwise size={22} color={colors.secondary} weight="duotone" />
               <Text style={tabStyles.actionText}>History</Text>
             </TouchableOpacity>
             <TouchableOpacity style={tabStyles.actionButton} activeOpacity={0.9}>
-              <PaperPlaneTilt size={22} color="#4338ca" weight="duotone" />
+              <PaperPlaneTilt size={22} color={colors.secondary} weight="duotone" />
               <Text style={tabStyles.actionText}>Share</Text>
             </TouchableOpacity>
           </View>

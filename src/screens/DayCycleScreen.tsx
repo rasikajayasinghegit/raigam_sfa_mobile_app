@@ -94,7 +94,7 @@ export function DayCycleScreen({
             {status === 'in-progress' ? (
               <Sun size={28} color={colors.primary} weight="duotone" />
             ) : status === 'completed' ? (
-              <MoonStars size={28} color="#0f172a" weight="duotone" />
+              <MoonStars size={28} color={colors.text} weight="duotone" />
             ) : (
               <Alarm size={28} color={colors.primary} weight="duotone" />
             )}
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   primaryText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '700',
     fontSize: 15,
   },

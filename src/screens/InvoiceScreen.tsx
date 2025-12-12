@@ -10,7 +10,7 @@ import {
 } from 'phosphor-react-native';
 import { AppHeader } from '../components/AppHeader';
 import { ScreenBackground } from '../components/ScreenBackground';
-import { colors } from '../theme/colors';
+import { colors, gradients } from '../theme/colors';
 import { tabStyles } from './tabStyles';
 import { LoginPayload } from '../services/auth';
 
@@ -28,7 +28,7 @@ export function InvoiceScreen({ onLogout, user }: Props) {
         contentContainerStyle={tabStyles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        <LinearGradient colors={['#dfe9ff', '#f5f7fb']} style={tabStyles.hero}>
+        <LinearGradient colors={gradients.invoiceHero} style={tabStyles.hero}>
           <View style={tabStyles.heroIcon}>
             <Receipt size={26} color={colors.primary} weight="duotone" />
           </View>

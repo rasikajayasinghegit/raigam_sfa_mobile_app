@@ -19,36 +19,47 @@ type Props = {
 
 const palette: Record<
   Variant,
-  { icon: React.ReactNode; bg: string; border: string; text: string }
+  {
+    Icon: typeof Info;
+    iconColor: string;
+    bg: string;
+    border: string;
+    text: string;
+  }
 > = {
   info: {
-    icon: <Info size={22} color="#1d4ed8" weight="duotone" />,
-    bg: '#e5f1ff',
-    border: '#c7e3ff',
-    text: '#0f172a',
+    Icon: Info,
+    iconColor: colors.primaryDark,
+    bg: colors.primarySoft,
+    border: colors.borderInfo,
+    text: colors.text,
   },
   success: {
-    icon: <CheckCircle size={22} color="#15803d" weight="duotone" />,
-    bg: '#ecfdf3',
-    border: '#bbf7d0',
-    text: '#0f172a',
+    Icon: CheckCircle,
+    iconColor: colors.success,
+    bg: colors.successSoft,
+    border: colors.borderSuccess,
+    text: colors.text,
   },
   warning: {
-    icon: <WarningCircle size={22} color="#b45309" weight="duotone" />,
-    bg: '#fff7ed',
-    border: '#fed7aa',
-    text: '#0f172a',
+    Icon: WarningCircle,
+    iconColor: colors.warning,
+    bg: colors.warningSoft,
+    border: colors.borderWarning,
+    text: colors.text,
   },
   error: {
-    icon: <XCircle size={22} color="#b91c1c" weight="duotone" />,
-    bg: '#fef2f2',
-    border: '#fecdd3',
-    text: '#0f172a',
+    Icon: XCircle,
+    iconColor: colors.danger,
+    bg: colors.dangerSoft,
+    border: colors.borderDanger,
+    text: colors.text,
   },
 };
 
 export function StatusAlert({ variant, title, message, onPress }: Props) {
   const theme = palette[variant];
+  const Icon = theme.Icon;
   return (
     <TouchableOpacity
       activeOpacity={onPress ? 0.85 : 1}
@@ -61,7 +72,9 @@ export function StatusAlert({ variant, title, message, onPress }: Props) {
         },
       ]}
     >
-      <View style={styles.icon}>{theme.icon}</View>
+      <View style={styles.icon}>
+        <Icon size={22} color={theme.iconColor} weight="duotone" />
+      </View>
       <View style={styles.texts}>
         {title ? <Text style={[styles.title, { color: theme.text }]}>{title}</Text> : null}
         <Text style={[styles.message, { color: theme.text }]}>{message}</Text>

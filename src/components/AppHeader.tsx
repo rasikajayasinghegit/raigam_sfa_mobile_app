@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
   },
   title: {
     flex: 1,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f6f7fb',
+    backgroundColor: colors.surfaceAlt,
   },
   iconDisabled: {
     opacity: 0.6,

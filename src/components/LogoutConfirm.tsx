@@ -36,14 +36,14 @@ export function LogoutConfirm({ visible, onConfirm, onCancel }: Props) {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    backgroundColor: colors.overlay,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
   },
   card: {
     width: '100%',
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 20,
     alignItems: 'center',
@@ -84,14 +84,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   primaryText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '700',
     fontSize: 15,
   },
   secondary: {
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
   },
   secondaryText: {
     color: colors.text,

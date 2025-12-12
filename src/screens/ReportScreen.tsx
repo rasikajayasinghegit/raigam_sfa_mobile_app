@@ -5,7 +5,7 @@ import { ArrowSquareOut, ChartLine, ChartPieSlice, FileCsv, Funnel } from 'phosp
 import { AppHeader } from '../components/AppHeader';
 import { ScreenBackground } from '../components/ScreenBackground';
 import { tabStyles } from './tabStyles';
-import { colors } from '../theme/colors';
+import { colors, gradients } from '../theme/colors';
 import { LoginPayload } from '../services/auth';
 
 type Props = {
@@ -22,9 +22,9 @@ export function ReportScreen({ onLogout, user }: Props) {
         contentContainerStyle={tabStyles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        <LinearGradient colors={['#e9f3ff', '#f6fbff']} style={tabStyles.hero}>
+        <LinearGradient colors={gradients.reportHero} style={tabStyles.hero}>
           <View style={tabStyles.heroIcon}>
-            <ChartLine size={26} color="#1d4ed8" weight="duotone" />
+            <ChartLine size={26} color={colors.primaryDark} weight="duotone" />
           </View>
           <View style={tabStyles.heroText}>
             <Text style={tabStyles.heroTitle}>Reports & insights</Text>

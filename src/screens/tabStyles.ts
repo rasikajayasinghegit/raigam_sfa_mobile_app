@@ -21,7 +21,7 @@ export const tabStyles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -39,7 +39,7 @@ export const tabStyles = StyleSheet.create({
     color: colors.textMuted,
   },
   card: {
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
     borderRadius: 14,
     padding: 16,
     gap: 12,
@@ -98,7 +98,7 @@ export const tabStyles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 12,
-    backgroundColor: '#f2f4f7',
+    backgroundColor: colors.background,
   },
   pillText: {
     color: colors.text,
@@ -124,7 +124,7 @@ export const tabStyles = StyleSheet.create({
     fontSize: 14,
   },
   mutedCard: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.surfaceMuted,
   },
   footerNote: {
     fontSize: 12,

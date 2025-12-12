@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
     borderRadius: 14,
     padding: 24,
     shadowColor: colors.shadow,
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   body: {
     fontSize: 14,
-    color: '#1f2937',
+    color: colors.heading,
     lineHeight: 20,
     marginTop: 6,
   },
@@ -80,20 +80,20 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   primaryButtonText: {
-    color: '#ffffff',
+    color: colors.white,
     fontWeight: '700',
   },
   secondaryButton: {
-    borderColor: '#cbd5e1',
+    borderColor: colors.borderStrong,
     borderWidth: 1,
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
     marginTop: 8,
   },
   secondaryButtonText: {
-    color: '#111827',
+    color: colors.text,
     fontWeight: '600',
   },
   bottomMeta: {

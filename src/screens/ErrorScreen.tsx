@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
     borderRadius: 14,
     padding: 24,
     shadowColor: colors.shadow,
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   body: {
     fontSize: 14,
-    color: '#1f2937',
+    color: colors.heading,
     lineHeight: 20,
   },
   primaryButton: {
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   primaryButtonText: {
-    color: '#ffffff',
+    color: colors.white,
     fontWeight: '700',
   },
 });

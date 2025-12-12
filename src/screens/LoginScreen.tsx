@@ -97,7 +97,7 @@ export function LoginScreen({
                   onChangeText={setUsername}
                   editable={!loading}
                   style={styles.input}
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={colors.placeholder}
                 />
               </View>
               <View style={styles.inputWrapper}>
@@ -108,7 +108,7 @@ export function LoginScreen({
                   onChangeText={setPassword}
                   editable={!loading}
                   style={[styles.input, styles.inputWithIcon]}
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={colors.placeholder}
                 />
                 <TouchableOpacity
                   style={styles.iconButton}
@@ -116,9 +116,9 @@ export function LoginScreen({
                   onPress={() => setShowPassword(prev => !prev)}
                 >
                   {showPassword ? (
-                    <Eye size={20} weight="regular" color="#5a48f7" />
+                    <Eye size={20} weight="regular" color={colors.accent} />
                   ) : (
-                    <EyeSlash size={20} weight="regular" color="#5a48f7" />
+                    <EyeSlash size={20} weight="regular" color={colors.accent} />
                   )}
                 </TouchableOpacity>
               </View>
@@ -176,7 +176,7 @@ export function LoginScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
   },
   scroll: {
     flexGrow: 1,
@@ -197,11 +197,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: '700',
-    color: '#0f172a',
+    color: colors.text,
   },
   subtitle: {
     fontSize: 15,
-    color: '#4b5563',
+    color: colors.textMuted,
   },
   form: {
     width: '100%',
@@ -211,12 +211,12 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 15,
-    color: '#0f172a',
+    color: colors.text,
   },
   inputWithIcon: {
     paddingRight: 44,
@@ -237,30 +237,30 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: colors.borderMuted,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
   },
   circleBoxChecked: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
   },
   checkboxMark: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 12,
     fontWeight: '700',
   },
   policyText: {
-    color: '#6b7280',
+    color: colors.textMuted,
   },
   primaryButton: {
     width: '100%',
-    backgroundColor: '#5a48f7',
+    backgroundColor: colors.accent,
     paddingVertical: 14,
     borderRadius: 24,
     alignItems: 'center',
-    shadowColor: '#5a48f7',
+    shadowColor: colors.accent,
     shadowOpacity: 0.25,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
@@ -270,13 +270,13 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   primaryButtonText: {
-    color: '#ffffff',
+    color: colors.white,
     fontWeight: '700',
     fontSize: 16,
   },
   secondaryButton: {
     width: '100%',
-    borderColor: '#e5e7eb',
+    borderColor: colors.border,
     borderWidth: 1,
     paddingVertical: 12,
     borderRadius: 20,
@@ -284,11 +284,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   secondaryButtonText: {
-    color: '#0f172a',
+    color: colors.text,
     fontWeight: '600',
   },
   error: {
-    color: '#b91c1c',
+    color: colors.danger,
     alignSelf: 'flex-start',
   },
   inputIcon: {

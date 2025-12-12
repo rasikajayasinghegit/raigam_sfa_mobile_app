@@ -152,7 +152,7 @@ export function DashboardScreen({
             </View>
             <View style={styles.timeBlock}>
               <View style={[styles.timeIcon, styles.endIcon]}>
-                <StopCircle size={22} color="#1e293b" weight="duotone" />
+                <StopCircle size={22} color={colors.text} weight="duotone" />
               </View>
               <View style={styles.timeText}>
                 <Text style={styles.label}>Ended</Text>
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   },
   quickCard: {
     flexBasis: '48%',
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
     borderRadius: 14,
     padding: 14,
     shadowColor: colors.shadow,
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   dayCard: {
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 16,
     shadowColor: colors.shadow,
@@ -329,15 +329,15 @@ const styles = StyleSheet.create({
   },
   statusMuted: {
     borderColor: colors.border,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.surfaceMuted,
   },
   statusInfo: {
-    borderColor: '#c7e3ff',
-    backgroundColor: '#e5f1ff',
+    borderColor: colors.borderInfo,
+    backgroundColor: colors.primarySoft,
   },
   statusSuccess: {
-    borderColor: '#bbf7d0',
-    backgroundColor: '#ecfdf3',
+    borderColor: colors.borderSuccess,
+    backgroundColor: colors.successSoft,
   },
   statusText: {
     fontSize: 12,
@@ -347,10 +347,10 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   statusTextInfo: {
-    color: '#1d4ed8',
+    color: colors.primaryDark,
   },
   statusTextSuccess: {
-    color: '#15803d',
+    color: colors.success,
   },
   timeline: {
     flexDirection: 'row',
@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 12,
     padding: 12,
   },
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   endIcon: {
-    backgroundColor: '#e2e8f0',
+    backgroundColor: colors.borderAlt,
   },
   timeText: {
     flex: 1,
@@ -417,10 +417,10 @@ const styles = StyleSheet.create({
   secondaryButton: {
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
   },
   primaryButtonText: {
-    color: '#ffffff',
+    color: colors.white,
     fontWeight: '700',
     fontSize: 15,
   },
