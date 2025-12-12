@@ -1,12 +1,21 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import { ArrowSquareOut, ChartLine, ChartPieSlice, FileCsv, Funnel } from 'phosphor-react-native';
+import {
+  ArrowSquareOut,
+  ChartLine,
+  ChartPieSlice,
+  FileCsv,
+  Funnel,
+  GearSix,
+} from 'phosphor-react-native';
 import { AppHeader } from '../components/AppHeader';
 import { ScreenBackground } from '../components/ScreenBackground';
-import { tabStyles } from './tabStyles';
-import { colors, gradients } from '../theme/colors';
+import { useTabStyles } from './tabStyles';
 import { LoginPayload } from '../services/auth';
+import { useOpenSettings } from '../hooks/useOpenSettings';
+import { useThemeMode } from '../context/ThemeContext';
 
 type Props = {
   onLogout: () => Promise<void>;
@@ -14,10 +23,21 @@ type Props = {
 };
 
 export function ReportScreen({ onLogout, user }: Props) {
+  const tabStyles = useTabStyles();
+  const { colors, gradients } = useThemeMode();
+  const openSettings = useOpenSettings();
   return (
     <SafeAreaView style={tabStyles.container}>
       <ScreenBackground />
-      <AppHeader title="Report" hideBack onRightPress={() => onLogout()} />
+      <AppHeader
+        title="Report"
+        hideBack
+        onRightPress={() => onLogout()}
+        secondaryRightIcon={
+          <GearSix size={22} color={colors.text} weight="regular" />
+        }
+        onSecondaryRightPress={openSettings}
+      />
       <ScrollView
         contentContainerStyle={tabStyles.scroll}
         showsVerticalScrollIndicator={false}

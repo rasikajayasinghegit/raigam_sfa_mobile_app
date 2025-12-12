@@ -1,8 +1,10 @@
 import React from 'react';
-import { Pressable, SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProgressBar } from '../components/ProgressBar';
-import { colors } from '../theme/colors';
+import { ColorPalette } from '../theme/colors';
 import { ScreenBackground } from '../components/ScreenBackground';
+import { useThemedStyles } from '../hooks/useThemedStyles';
 
 type Props = {
   latestVersion: string;
@@ -11,7 +13,78 @@ type Props = {
   onRetry: () => void;
 };
 
+const createStyles = (colors: ColorPalette) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      padding: 24,
+      justifyContent: 'center',
+    },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      padding: 24,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.08,
+      shadowRadius: 12,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 4,
+      width: '100%',
+      maxWidth: 480,
+      alignSelf: 'center',
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    body: {
+      fontSize: 14,
+      color: colors.heading,
+      lineHeight: 20,
+      marginTop: 6,
+    },
+    muted: {
+      color: colors.textMuted,
+      marginTop: 4,
+    },
+    primaryButton: {
+      backgroundColor: colors.primary,
+      paddingVertical: 12,
+      borderRadius: 10,
+      alignItems: 'center',
+      marginTop: 6,
+    },
+    primaryButtonText: {
+      color: colors.white,
+      fontWeight: '700',
+    },
+    secondaryButton: {
+      borderColor: colors.borderStrong,
+      borderWidth: 1,
+      paddingVertical: 12,
+      borderRadius: 10,
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      marginTop: 8,
+    },
+    secondaryButtonText: {
+      color: colors.text,
+      fontWeight: '600',
+    },
+    bottomMeta: {
+      marginTop: 20,
+    },
+    progressHint: {
+      color: colors.textMuted,
+      marginTop: 6,
+      fontSize: 12,
+    },
+  });
+
 export function UpdateRequiredScreen({ latestVersion, message, onUpdate, onRetry }: Props) {
+  const styles = useThemedStyles(createStyles);
   return (
     <SafeAreaView style={styles.container}>
       <ScreenBackground />
@@ -36,72 +109,3 @@ export function UpdateRequiredScreen({ latestVersion, message, onUpdate, onRetry
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    padding: 24,
-    justifyContent: 'center',
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: 14,
-    padding: 24,
-    shadowColor: colors.shadow,
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
-    width: '100%',
-    maxWidth: 480,
-    alignSelf: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  body: {
-    fontSize: 14,
-    color: colors.heading,
-    lineHeight: 20,
-    marginTop: 6,
-  },
-  muted: {
-    color: colors.textMuted,
-    marginTop: 4,
-  },
-  primaryButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 6,
-  },
-  primaryButtonText: {
-    color: colors.white,
-    fontWeight: '700',
-  },
-  secondaryButton: {
-    borderColor: colors.borderStrong,
-    borderWidth: 1,
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    marginTop: 8,
-  },
-  secondaryButtonText: {
-    color: colors.text,
-    fontWeight: '600',
-  },
-  bottomMeta: {
-    marginTop: 20,
-  },
-  progressHint: {
-    color: colors.textMuted,
-    marginTop: 6,
-    fontSize: 12,
-  },
-});

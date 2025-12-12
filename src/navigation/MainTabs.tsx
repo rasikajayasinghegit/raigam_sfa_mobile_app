@@ -5,7 +5,6 @@ import {
 } from '@react-navigation/bottom-tabs';
 import { enableScreens } from 'react-native-screens';
 import { Animated, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   ChartLine,
   ClipboardText,
@@ -13,7 +12,7 @@ import {
   Receipt,
   Storefront,
 } from 'phosphor-react-native';
-import { colors } from '../theme/colors';
+import { ColorPalette } from '../theme/colors';
 import { DashboardScreen } from '../screens/DashboardScreen';
 import { InvoiceScreen } from '../screens/InvoiceScreen';
 import { OutletScreen } from '../screens/OutletScreen';
@@ -22,16 +21,11 @@ import { SurveyScreen } from '../screens/SurveyScreen';
 import { LoginPayload } from '../services/auth';
 import { DayCycleState } from '../services/dayCycle';
 import { DayStatus } from '../hooks/useDayCycle';
+import { TabParamList } from './types';
+import { useThemeMode } from '../context/ThemeContext';
+import { useThemedStyles } from '../hooks/useThemedStyles';
 
 enableScreens();
-
-type TabParamList = {
-  Dashboard: undefined;
-  Invoice: undefined;
-  Outlet: undefined;
-  Report: undefined;
-  Survey: undefined;
-};
 
 type Props = {
   user: LoginPayload;
@@ -62,19 +56,59 @@ const tabIcon = (
   return <ClipboardText size={22} color={color} weight={weight} />;
 };
 
-const CustomTabBar = ({
-  state,
-  descriptors,
-  navigation,
-}: BottomTabBarProps) => {
+const createStyles = (colors: ColorPalette) =>
+  StyleSheet.create({
+    tabShell: {
+      backgroundColor: colors.background,
+    },
+    tabBar: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: '100%',
+      paddingHorizontal: 24,
+      paddingVertical: 10,
+      minHeight: 64,
+      borderRadius: 0,
+      backgroundColor: colors.surface,
+      borderTopWidth: 1,
+      borderColor: colors.divider,
+      elevation: 18,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.18,
+      shadowRadius: 16,
+      shadowOffset: { width: 0, height: 6 },
+    },
+    tabItem: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 4,
+    },
+    iconWrapper: {
+      width: 46,
+      height: 46,
+      borderRadius: 23,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 2,
+    },
+    tabLabel: {
+      fontSize: 12,
+      fontWeight: '600',
+      textAlign: 'center',
+      letterSpacing: 0.2,
+    },
+  });
+
+const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   const animations = useRef<Record<string, Animated.Value>>({});
-  const insets = useSafeAreaInsets();
-  const shellPaddingBottom = 0;
+  const { colors } = useThemeMode();
+  const styles = useThemedStyles(createStyles);
   const ACTIVE_COLOR = colors.primary;
   const INACTIVE_COLOR = colors.textSubtle;
-
   return (
-    <View style={[styles.tabShell, { paddingBottom: shellPaddingBottom }]}>
+    <View style={styles.tabShell}>
       <View style={styles.tabBar}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -169,6 +203,7 @@ export function MainTabs({
   onStartDay,
   onEndDay,
 }: Props) {
+  const { colors } = useThemeMode();
   return (
     <Tab.Navigator
       sceneContainerStyle={{
@@ -208,47 +243,3 @@ export function MainTabs({
     </Tab.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  tabShell: {
-    backgroundColor: colors.background,
-  },
-  tabBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    paddingHorizontal: 24,
-    paddingVertical: 10,
-    minHeight: 64,
-    borderRadius: 0,
-    backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderColor: colors.divider,
-    elevation: 18,
-    shadowColor: colors.shadow,
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 6 },
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 4,
-  },
-  iconWrapper: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 2,
-  },
-  tabLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    textAlign: 'center',
-    letterSpacing: 0.2,
-  },
-});

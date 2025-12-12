@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { colors } from '../theme/colors';
+import { ColorPalette } from '../theme/colors';
+import { useThemedStyles } from '../hooks/useThemedStyles';
 
 type Props = {
   progress: number; // 0..1
@@ -8,6 +9,7 @@ type Props = {
 
 export function ProgressBar({ progress }: Props) {
   const clamped = Math.max(0, Math.min(1, progress));
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.track}>
       <View style={[styles.bar, { width: `${Math.floor(clamped * 100)}%` }]} />
@@ -15,7 +17,8 @@ export function ProgressBar({ progress }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorPalette) =>
+  StyleSheet.create({
   track: {
     height: 10,
     backgroundColor: colors.border,
@@ -26,4 +29,4 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: colors.primary,
   },
-});
+  });

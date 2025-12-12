@@ -1,12 +1,20 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import { ClipboardText, ClockCounterClockwise, PaperPlaneTilt, PencilSimple } from 'phosphor-react-native';
+import {
+  ClipboardText,
+  ClockCounterClockwise,
+  PaperPlaneTilt,
+  PencilSimple,
+  GearSix,
+} from 'phosphor-react-native';
 import { AppHeader } from '../components/AppHeader';
 import { ScreenBackground } from '../components/ScreenBackground';
-import { tabStyles } from './tabStyles';
+import { useTabStyles } from './tabStyles';
 import { LoginPayload } from '../services/auth';
-import { colors, gradients } from '../theme/colors';
+import { useOpenSettings } from '../hooks/useOpenSettings';
+import { useThemeMode } from '../context/ThemeContext';
 
 type Props = {
   onLogout: () => Promise<void>;
@@ -14,10 +22,21 @@ type Props = {
 };
 
 export function SurveyScreen({ onLogout, user }: Props) {
+  const tabStyles = useTabStyles();
+  const { colors, gradients } = useThemeMode();
+  const openSettings = useOpenSettings();
   return (
     <SafeAreaView style={tabStyles.container}>
       <ScreenBackground />
-      <AppHeader title="Survey" hideBack onRightPress={() => onLogout()} />
+      <AppHeader
+        title="Survey"
+        hideBack
+        onRightPress={() => onLogout()}
+        secondaryRightIcon={
+          <GearSix size={22} color={colors.text} weight="regular" />
+        }
+        onSecondaryRightPress={openSettings}
+      />
       <ScrollView
         contentContainerStyle={tabStyles.scroll}
         showsVerticalScrollIndicator={false}

@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { gradients } from '../theme/colors';
+import { useThemeMode } from '../context/ThemeContext';
 
 export function ScreenBackground() {
+  const { gradients } = useThemeMode();
   return (
     <LinearGradient
       colors={gradients.background}

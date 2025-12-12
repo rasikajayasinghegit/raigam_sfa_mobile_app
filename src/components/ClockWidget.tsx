@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { colors } from '../theme/colors';
+import { ColorPalette } from '../theme/colors';
+import { useThemeMode } from '../context/ThemeContext';
+import { useThemedStyles } from '../hooks/useThemedStyles';
 
 function getAngles(date: Date) {
   const seconds = date.getSeconds();
@@ -27,6 +29,8 @@ export function ClockWidget() {
   const [now, setNow] = useState(new Date());
   const { hourDeg, minuteDeg, secondDeg } = getAngles(now);
   const ticks = useMemo(() => Array.from({ length: 60 }, (_, i) => i), []);
+  const { colors } = useThemeMode();
+  const styles = useThemedStyles(createStyles);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -44,17 +48,17 @@ export function ClockWidget() {
           return (
             <View
               key={i}
-              style={[
-                styles.tick,
-                {
-                  width: size,
-                  height: size,
-                  backgroundColor: colors.text,
-                  opacity: isHour ? 0.9 : 0.6,
-                  transform: [
-                    { rotate: `${angle}deg` },
-                    { translateY: -radius },
-                  ],
+                style={[
+                  styles.tick,
+                  {
+                    width: size,
+                    height: size,
+                    backgroundColor: colors.text,
+                    opacity: isHour ? 0.9 : 0.6,
+                    transform: [
+                      { rotate: `${angle}deg` },
+                      { translateY: -radius },
+                    ],
                 },
               ]}
             />
@@ -78,7 +82,8 @@ export function ClockWidget() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (palette: ColorPalette) =>
+  StyleSheet.create({
   container: {
     alignItems: 'center',
     gap: 8,
@@ -87,10 +92,10 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: palette.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.shadow,
+    shadowColor: palette.shadow,
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
@@ -111,7 +116,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 60,
     height: 8,
-    backgroundColor: colors.text,
+    backgroundColor: palette.text,
     borderRadius: 8,
     left: 0,
     top: -4,
@@ -120,7 +125,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 80,
     height: 6,
-    backgroundColor: colors.text,
+    backgroundColor: palette.text,
     borderRadius: 6,
     left: 0,
     top: -3,
@@ -129,7 +134,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 90,
     height: 2,
-    backgroundColor: colors.danger,
+    backgroundColor: palette.danger,
     borderRadius: 2,
     left: 0,
     top: -1,
@@ -138,12 +143,12 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: colors.danger,
+    backgroundColor: palette.danger,
   },
   dateText: {
     fontSize: 16,
-    color: colors.text,
+    color: palette.text,
     fontWeight: '700',
     marginTop: 4,
   },
-});
+  });

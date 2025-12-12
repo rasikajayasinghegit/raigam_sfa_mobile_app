@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   HandWaving,
   Target,
@@ -8,15 +9,20 @@ import {
   Receipt,
   PlayCircle,
   StopCircle,
+  GearSix,
 } from 'phosphor-react-native';
 import { LoginPayload } from '../services/auth';
-import { colors } from '../theme/colors';
+import { ColorPalette } from '../theme/colors';
 import { AppHeader } from '../components/AppHeader';
 import { DayCycleState } from '../services/dayCycle';
 import { DayStatus } from '../hooks/useDayCycle';
 import { ScreenBackground } from '../components/ScreenBackground';
 import { LogoutConfirm } from '../components/LogoutConfirm';
 import { StatusAlert } from '../components/StatusAlert';
+import { useOpenSettings } from '../hooks/useOpenSettings';
+import { useToast } from '../context/ToastContext';
+import { useThemeMode } from '../context/ThemeContext';
+import { useThemedStyles } from '../hooks/useThemedStyles';
 
 type Props = {
   user: LoginPayload;
@@ -39,13 +45,29 @@ export function DashboardScreen({
 }: Props) {
   const [dayMessage, setDayMessage] = useState<string | null>(null);
   const [showLogout, setShowLogout] = useState(false);
+  const openSettings = useOpenSettings();
+  const { showToast } = useToast();
+  const { colors } = useThemeMode();
+  const styles = useThemedStyles(createStyles);
 
   const quickActions = [
     { label: 'Welcome', icon: <HandWaving size={24} color={colors.text} weight="regular" /> },
-    { label: 'Target', icon: <Target size={24} color={colors.text} weight="regular" /> },
-    { label: 'PC Target', icon: <ClipboardText size={24} color={colors.text} weight="regular" /> },
-    { label: 'Outlets', icon: <Storefront size={24} color={colors.text} weight="regular" /> },
-    { label: 'Invoice', icon: <Receipt size={24} color={colors.text} weight="regular" /> },
+    {
+      label: 'Target',
+      icon: <Target size={24} color={colors.text} weight="regular" />,
+    },
+    {
+      label: 'PC Target',
+      icon: <ClipboardText size={24} color={colors.text} weight="regular" />,
+    },
+    {
+      label: 'Outlets',
+      icon: <Storefront size={24} color={colors.text} weight="regular" />,
+    },
+    {
+      label: 'Invoice',
+      icon: <Receipt size={24} color={colors.text} weight="regular" />,
+    },
   ];
 
   const dayStatusLabel = useMemo(() => {
@@ -55,8 +77,10 @@ export function DashboardScreen({
   }, [dayStatus]);
 
   const statusHelper = useMemo(() => {
-    if (dayStatus === 'not-started') return 'Start your shift to unlock your route.';
-    if (dayStatus === 'completed') return 'Day closed. Great work staying on track.';
+    if (dayStatus === 'not-started')
+      return 'Start your shift to unlock your route.';
+    if (dayStatus === 'completed')
+      return 'Day closed. Great work staying on track.';
     return 'Day running. Remember to end before you finish.';
   }, [dayStatus]);
 
@@ -71,8 +95,18 @@ export function DashboardScreen({
     try {
       await onStartDay();
       setDayMessage('Day started.');
+      showToast({
+        title: 'Day started',
+        message: 'Route unlocked for today.',
+        variant: 'success',
+      });
     } catch (err: any) {
       setDayMessage(err?.message || 'Unable to start day.');
+      showToast({
+        title: 'Start failed',
+        message: err?.message || 'Please try starting your day again.',
+        variant: 'error',
+      });
     }
   };
 
@@ -81,8 +115,18 @@ export function DashboardScreen({
     try {
       await onEndDay();
       setDayMessage('Day ended.');
+      showToast({
+        title: 'Day ended',
+        message: 'Great work closing the day.',
+        variant: 'success',
+      });
     } catch (err: any) {
       setDayMessage(err?.message || 'Unable to end day.');
+      showToast({
+        title: 'End day failed',
+        message: err?.message || 'Please try ending your day again.',
+        variant: 'error',
+      });
     }
   };
 
@@ -95,6 +139,10 @@ export function DashboardScreen({
         onRightPress={() => {
           setShowLogout(true);
         }}
+        secondaryRightIcon={
+          <GearSix size={22} color={colors.text} weight="regular" />
+        }
+        onSecondaryRightPress={openSettings}
       />
       <ScrollView
         contentContainerStyle={styles.scroll}
@@ -102,7 +150,9 @@ export function DashboardScreen({
       >
         <View style={styles.header}>
           <Text style={styles.title}>Welcome back</Text>
-          <Text style={styles.subtitle}>{user.personalName || user.userName}</Text>
+          <Text style={styles.subtitle}>
+            {user.personalName || user.userName}
+          </Text>
         </View>
 
         <View style={styles.dayCard}>
@@ -117,8 +167,8 @@ export function DashboardScreen({
                 dayStatus === 'completed'
                   ? styles.statusSuccess
                   : dayStatus === 'in-progress'
-                    ? styles.statusInfo
-                    : styles.statusMuted,
+                  ? styles.statusInfo
+                  : styles.statusMuted,
               ]}
             >
               <Text
@@ -127,8 +177,8 @@ export function DashboardScreen({
                   dayStatus === 'completed'
                     ? styles.statusTextSuccess
                     : dayStatus === 'in-progress'
-                      ? styles.statusTextInfo
-                      : styles.statusTextMuted,
+                    ? styles.statusTextInfo
+                    : styles.statusTextMuted,
                 ]}
               >
                 {dayStatusLabel}
@@ -143,7 +193,9 @@ export function DashboardScreen({
               </View>
               <View style={styles.timeText}>
                 <Text style={styles.label}>Started</Text>
-                <Text style={styles.value}>{formatTime(dayState?.startTime)}</Text>
+                <Text style={styles.value}>
+                  {formatTime(dayState?.startTime)}
+                </Text>
               </View>
             </View>
             <View style={styles.connector}>
@@ -156,7 +208,9 @@ export function DashboardScreen({
               </View>
               <View style={styles.timeText}>
                 <Text style={styles.label}>Ended</Text>
-                <Text style={styles.value}>{formatTime(dayState?.endTime)}</Text>
+                <Text style={styles.value}>
+                  {formatTime(dayState?.endTime)}
+                </Text>
               </View>
             </View>
           </View>
@@ -167,35 +221,43 @@ export function DashboardScreen({
             message="Please end your day before leaving."
           />
 
-          {dayMessage ? <Text style={styles.dayMessage}>{dayMessage}</Text> : null}
+          {dayMessage ? (
+            <Text style={styles.dayMessage}>{dayMessage}</Text>
+          ) : null}
 
           <View style={styles.dayActions}>
             <TouchableOpacity
               style={[
                 styles.dayButton,
                 styles.secondaryButton,
-                (dayStatus !== 'not-started' || dayLoading) && styles.buttonDisabled,
+                (dayStatus !== 'not-started' || dayLoading) &&
+                  styles.buttonDisabled,
               ]}
               onPress={handleStart}
               disabled={dayStatus !== 'not-started' || dayLoading}
               activeOpacity={0.8}
             >
               <Text style={styles.secondaryText}>
-                {dayLoading && dayStatus === 'not-started' ? 'Starting...' : 'Start Day'}
+                {dayLoading && dayStatus === 'not-started'
+                  ? 'Starting...'
+                  : 'Start Day'}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.dayButton,
                 styles.primaryButton,
-                (dayStatus !== 'in-progress' || dayLoading) && styles.buttonDisabled,
+                (dayStatus !== 'in-progress' || dayLoading) &&
+                  styles.buttonDisabled,
               ]}
               onPress={handleEnd}
               disabled={dayStatus !== 'in-progress' || dayLoading}
               activeOpacity={0.8}
             >
               <Text style={styles.primaryButtonText}>
-                {dayLoading && dayStatus === 'in-progress' ? 'Ending...' : 'End Day'}
+                {dayLoading && dayStatus === 'in-progress'
+                  ? 'Ending...'
+                  : 'End Day'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -214,9 +276,9 @@ export function DashboardScreen({
       </ScrollView>
       <LogoutConfirm
         visible={showLogout}
-        onConfirm={() => {
+        onConfirm={async () => {
           setShowLogout(false);
-          onLogout();
+          await onLogout();
         }}
         onCancel={() => setShowLogout(false)}
       />
@@ -224,7 +286,8 @@ export function DashboardScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorPalette) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -297,8 +360,8 @@ const styles = StyleSheet.create({
   value: {
     color: colors.text,
     fontSize: 14,
-    maxWidth: '60%',
-    textAlign: 'right',
+    maxWidth: '100%',
+    textAlign: 'left',
   },
   dayCard: {
     backgroundColor: colors.surface,
@@ -432,4 +495,4 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.6,
   },
-});
+  });

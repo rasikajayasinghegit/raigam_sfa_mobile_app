@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
@@ -11,9 +11,15 @@ import { useVersionGate } from './hooks/useVersionGate';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { useDayCycle } from './hooks/useDayCycle';
 import { getCurrentLocation } from './services/location';
-import { disableImmersiveMode, enableImmersiveMode } from './utils/immersive';
 import { MainTabs } from './navigation/MainTabs';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SettingsScreen } from './screens/SettingsScreen';
+import { RootStackParamList } from './navigation/types';
+import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
+
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 function AppBody(): React.JSX.Element {
   const { status, statusMessage, progress, versionInfo, retry, appVersion } = useVersionGate();
@@ -114,15 +120,24 @@ function AppBody(): React.JSX.Element {
 
   if (session) {
     return (
-      <MainTabs
-        user={session}
-        onLogout={logout}
-        dayState={dayState}
-        dayStatus={dayStatus}
-        dayLoading={dayLoading}
-        onStartDay={startWithLocation}
-        onEndDay={endWithLocation}
-      />
+      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        <RootStack.Screen name="MainTabs">
+          {() => (
+            <MainTabs
+              user={session}
+              onLogout={logout}
+              dayState={dayState}
+              dayStatus={dayStatus}
+              dayLoading={dayLoading}
+              onStartDay={startWithLocation}
+              onEndDay={endWithLocation}
+            />
+          )}
+        </RootStack.Screen>
+        <RootStack.Screen name="Settings">
+          {() => <SettingsScreen user={session} onLogout={logout} />}
+        </RootStack.Screen>
+      </RootStack.Navigator>
     );
   }
 
@@ -139,22 +154,27 @@ function AppBody(): React.JSX.Element {
 }
 
 export default function App(): React.JSX.Element {
-  useEffect(() => {
-    enableImmersiveMode();
-    return () => {
-      disableImmersiveMode();
-    };
-  }, []);
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <NavigationContainer>
           <AuthProvider>
-            <AppBody />
+            <ThemeContainer>
+              <AppBody />
+            </ThemeContainer>
           </AuthProvider>
         </NavigationContainer>
       </SafeAreaProvider>
     </GestureHandlerRootView>
+  );
+}
+
+function ThemeContainer({ children }: { children: React.ReactNode }) {
+  const { session } = useAuth();
+  const storageKey = session ? `user-${session.userId}` : undefined;
+  return (
+    <ThemeProvider storageKey={storageKey}>
+      <ToastProvider>{children}</ToastProvider>
+    </ThemeProvider>
   );
 }

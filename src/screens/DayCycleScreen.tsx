@@ -1,13 +1,17 @@
 import React, { useMemo, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Alarm, MoonStars, Sun } from 'phosphor-react-native';
 import { AppHeader } from '../components/AppHeader';
-import { colors } from '../theme/colors';
+import { ColorPalette } from '../theme/colors';
 import { LoginPayload } from '../services/auth';
 import { DayCycleState } from '../services/dayCycle';
 import { ScreenBackground } from '../components/ScreenBackground';
 import { ClockWidget } from '../components/ClockWidget';
 import { LogoutConfirm } from '../components/LogoutConfirm';
+import { useThemeMode } from '../context/ThemeContext';
+import { useThemedStyles } from '../hooks/useThemedStyles';
+import { useToast } from '../context/ToastContext';
 
 type Props = {
   user: LoginPayload;
@@ -56,6 +60,9 @@ export function DayCycleScreen({
 }: Props) {
   const [message, setMessage] = useState<string | null>(null);
   const [showLogout, setShowLogout] = useState(false);
+  const { colors } = useThemeMode();
+  const styles = useThemedStyles(createStyles);
+  const { showToast } = useToast();
 
   const headline = useMemo(() => {
     if (status === 'not-started') return 'Start your day';
@@ -70,9 +77,19 @@ export function DayCycleScreen({
     try {
       await onStart(options);
       setMessage('Day started. Opening dashboard...');
+      showToast({
+        title: 'Day started',
+        message: 'Good luck with your visits.',
+        variant: 'success',
+      });
       onContinue?.();
     } catch (err: any) {
       setMessage(err?.message || 'Unable to start day.');
+      showToast({
+        title: 'Start failed',
+        message: err?.message || 'Please try starting your day again.',
+        variant: 'error',
+      });
     }
   };
 
@@ -126,9 +143,9 @@ export function DayCycleScreen({
       </View>
       <LogoutConfirm
         visible={showLogout}
-        onConfirm={() => {
+        onConfirm={async () => {
           setShowLogout(false);
-          onLogout?.();
+          await onLogout?.();
         }}
         onCancel={() => setShowLogout(false)}
       />
@@ -136,7 +153,8 @@ export function DayCycleScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorPalette) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -204,4 +222,4 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.6,
   },
-});
+  });

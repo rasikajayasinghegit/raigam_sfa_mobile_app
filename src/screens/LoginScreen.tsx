@@ -3,7 +3,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -12,10 +11,14 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Eye, EyeSlash } from 'phosphor-react-native';
-import { colors } from '../theme/colors';
+import { ColorPalette } from '../theme/colors';
 import { Logo } from '../components/Logo';
 import { ScreenBackground } from '../components/ScreenBackground';
+import { useToast } from '../context/ToastContext';
+import { useThemeMode } from '../context/ThemeContext';
+import { useThemedStyles } from '../hooks/useThemedStyles';
 
 type Props = {
   onSubmit: (
@@ -42,6 +45,9 @@ export function LoginScreen({
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(rememberMe);
   const [showPassword, setShowPassword] = useState(false);
+  const { showToast } = useToast();
+  const { colors } = useThemeMode();
+  const styles = useThemedStyles(createStyles);
 
   useEffect(() => {
     setRemember(rememberMe);
@@ -55,6 +61,17 @@ export function LoginScreen({
   const handleSubmit = async () => {
     try {
       await onSubmit(username, password, remember);
+      showToast({
+        title: 'Signed in',
+        message: 'Welcome back!',
+        variant: 'success',
+      });
+    } catch (err: any) {
+      showToast({
+        title: 'Sign in failed',
+        message: err?.message || 'Unable to sign in. Please check credentials.',
+        variant: 'error',
+      });
     } finally {
       setPassword('');
     }
@@ -173,7 +190,8 @@ export function LoginScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorPalette) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.surface,
@@ -304,4 +322,4 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -14 }],
     padding: 6,
   },
-});
+  });

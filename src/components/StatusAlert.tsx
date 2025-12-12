@@ -6,7 +6,9 @@ import {
   Info,
   XCircle,
 } from 'phosphor-react-native';
-import { colors } from '../theme/colors';
+import { ColorPalette } from '../theme/colors';
+import { useThemedStyles } from '../hooks/useThemedStyles';
+import { useThemeMode } from '../context/ThemeContext';
 
 type Variant = 'info' | 'success' | 'warning' | 'error';
 
@@ -17,48 +19,72 @@ type Props = {
   onPress?: () => void;
 };
 
-const palette: Record<
-  Variant,
-  {
-    Icon: typeof Info;
-    iconColor: string;
-    bg: string;
-    border: string;
-    text: string;
-  }
-> = {
-  info: {
-    Icon: Info,
-    iconColor: colors.primaryDark,
-    bg: colors.primarySoft,
-    border: colors.borderInfo,
-    text: colors.text,
-  },
-  success: {
-    Icon: CheckCircle,
-    iconColor: colors.success,
-    bg: colors.successSoft,
-    border: colors.borderSuccess,
-    text: colors.text,
-  },
-  warning: {
-    Icon: WarningCircle,
-    iconColor: colors.warning,
-    bg: colors.warningSoft,
-    border: colors.borderWarning,
-    text: colors.text,
-  },
-  error: {
-    Icon: XCircle,
-    iconColor: colors.danger,
-    bg: colors.dangerSoft,
-    border: colors.borderDanger,
-    text: colors.text,
-  },
-};
+const getVariantTokens = (colors: ColorPalette) =>
+  ({
+    info: {
+      Icon: Info,
+      iconColor: colors.primaryDark,
+      bg: colors.primarySoft,
+      border: colors.borderInfo,
+      text: colors.text,
+    },
+    success: {
+      Icon: CheckCircle,
+      iconColor: colors.success,
+      bg: colors.successSoft,
+      border: colors.borderSuccess,
+      text: colors.text,
+    },
+    warning: {
+      Icon: WarningCircle,
+      iconColor: colors.warning,
+      bg: colors.warningSoft,
+      border: colors.borderWarning,
+      text: colors.text,
+    },
+    error: {
+      Icon: XCircle,
+      iconColor: colors.danger,
+      bg: colors.dangerSoft,
+      border: colors.borderDanger,
+      text: colors.text,
+    },
+  }) as const;
+
+const createStyles = (colors: ColorPalette) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      borderRadius: 14,
+      borderWidth: 1,
+      padding: 12,
+      gap: 10,
+    },
+    icon: {
+      width: 28,
+      alignItems: 'center',
+      paddingTop: 2,
+    },
+    texts: {
+      flex: 1,
+      gap: 2,
+    },
+    title: {
+      fontSize: 15,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    message: {
+      fontSize: 14,
+      color: colors.textMuted,
+    },
+  });
 
 export function StatusAlert({ variant, title, message, onPress }: Props) {
-  const theme = palette[variant];
+  const { colors } = useThemeMode();
+  const styles = useThemedStyles(createStyles);
+  const theme = getVariantTokens(colors)[variant];
   const Icon = theme.Icon;
   return (
     <TouchableOpacity
@@ -82,32 +108,3 @@ export function StatusAlert({ variant, title, message, onPress }: Props) {
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 12,
-    gap: 10,
-  },
-  icon: {
-    width: 28,
-    alignItems: 'center',
-    paddingTop: 2,
-  },
-  texts: {
-    flex: 1,
-    gap: 2,
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  message: {
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-});

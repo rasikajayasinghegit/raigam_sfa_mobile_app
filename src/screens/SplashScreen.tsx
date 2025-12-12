@@ -12,8 +12,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Logo } from '../components/Logo';
 import { ProgressBar } from '../components/ProgressBar';
 import { PULSE_DURATION_MS } from '../config/appConfig';
-import { colors } from '../theme/colors';
+import { ColorPalette } from '../theme/colors';
 import { ScreenBackground } from '../components/ScreenBackground';
+import { useThemeMode } from '../context/ThemeContext';
+import { useThemedStyles } from '../hooks/useThemedStyles';
 
 type Props = {
   title?: string;
@@ -31,6 +33,8 @@ export function SplashScreen({
   appVersion,
 }: Props) {
   const pulse = useRef(new Animated.Value(0)).current;
+  const { colors } = useThemeMode();
+  const styles = useThemedStyles(createStyles);
 
   useEffect(() => {
     const animation = Animated.loop(
@@ -89,7 +93,8 @@ export function SplashScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ColorPalette) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -139,4 +144,4 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontSize: 12,
   },
-});
+  });
