@@ -4,14 +4,7 @@ import {
   BottomTabBarProps,
 } from '@react-navigation/bottom-tabs';
 import { enableScreens } from 'react-native-screens';
-import {
-  Animated,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Platform,
-} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { Animated, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   ChartLine,
@@ -59,14 +52,14 @@ const tabIcon = (
 ) => {
   const weight = focused ? 'fill' : 'regular';
   if (route === 'Dashboard')
-    return <House size={24} color={color} weight={weight} />;
+    return <House size={22} color={color} weight={weight} />;
   if (route === 'Invoice')
-    return <Receipt size={24} color={color} weight={weight} />;
+    return <Receipt size={22} color={color} weight={weight} />;
   if (route === 'Outlet')
-    return <Storefront size={24} color={color} weight={weight} />;
+    return <Storefront size={22} color={color} weight={weight} />;
   if (route === 'Report')
-    return <ChartLine size={24} color={color} weight={weight} />;
-  return <ClipboardText size={24} color={color} weight={weight} />;
+    return <ChartLine size={22} color={color} weight={weight} />;
+  return <ClipboardText size={22} color={color} weight={weight} />;
 };
 
 const CustomTabBar = ({
@@ -76,26 +69,12 @@ const CustomTabBar = ({
 }: BottomTabBarProps) => {
   const animations = useRef<Record<string, Animated.Value>>({});
   const insets = useSafeAreaInsets();
-  const shellPaddingBottom = Math.max(insets.bottom, 12);
-  const ACTIVE_COLOR = colors.primary;
-  const INACTIVE_COLOR = '#a0a8bb';
+  const shellPaddingBottom = 0;
+  const ACTIVE_COLOR = colors.primary || '#2563eb';
+  const INACTIVE_COLOR = colors.textMuted || '#94a3b8';
 
   return (
     <View style={[styles.tabShell, { paddingBottom: shellPaddingBottom }]}>
-      {/* ✅ Glass background using gradient + transparency */}
-      <View style={StyleSheet.absoluteFillObject}>
-        <LinearGradient
-          colors={[
-            'rgba(255,255,255,0.15)',
-            'rgba(255,255,255,0.08)',
-            'rgba(255,255,255,0.12)',
-          ]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.glassLayer}
-        />
-      </View>
-
       <View style={styles.tabBar}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -117,18 +96,19 @@ const CustomTabBar = ({
               toValue: isFocused ? 1 : 0,
               useNativeDriver: true,
               tension: 140,
-              friction: 12,
+              friction: 14,
             }).start();
           }
 
           const scale = animations.current[route.key]?.interpolate({
             inputRange: [0, 1],
-            outputRange: [1, 1.08],
+            outputRange: [1, 1.05],
           });
           const translateY = animations.current[route.key]?.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, -4],
+            outputRange: [0, -2],
           });
+
           const onPress = () => {
             const event = navigation.emit({
               type: 'tabPress',
@@ -143,21 +123,31 @@ const CustomTabBar = ({
           return (
             <TouchableOpacity
               key={route.key}
-              accessibilityRole="button"
-              accessibilityState={isFocused ? { selected: true } : {}}
-              accessibilityLabel={options.tabBarAccessibilityLabel}
-              testID={options.tabBarTestID}
               onPress={onPress}
+              activeOpacity={0.85}
               style={styles.tabItem}
-              activeOpacity={0.82}
             >
-              <Animated.View style={{ transform: [{ translateY }, { scale }] }}>
+              <Animated.View
+                style={[
+                  styles.iconWrapper,
+                  {
+                    transform: [{ translateY }, { scale }],
+                    backgroundColor: isFocused
+                      ? colors.primarySoft
+                      : 'transparent',
+                  },
+                ]}
+              >
                 {tabIcon(route.name as keyof TabParamList, color, isFocused)}
               </Animated.View>
+
               <Animated.Text
                 style={[
                   styles.tabLabel,
-                  { color, opacity: isFocused ? 1 : 0.85 },
+                  {
+                    color,
+                    opacity: isFocused ? 1 : 0.65,
+                  },
                 ]}
               >
                 {label as string}
@@ -181,7 +171,9 @@ export function MainTabs({
 }: Props) {
   return (
     <Tab.Navigator
-      sceneContainerStyle={styles.sceneContainer}
+      sceneContainerStyle={{
+        backgroundColor: colors.background, // ✅ solid background, no transparency
+      }}
       tabBar={props => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
@@ -218,52 +210,45 @@ export function MainTabs({
 }
 
 const styles = StyleSheet.create({
-  sceneContainer: {
-    backgroundColor: colors.background,
-    paddingBottom: 96,
-  },
   tabShell: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 12,
-    paddingHorizontal: 18,
-    paddingTop: 6,
-    paddingBottom: 12,
-    zIndex: 10,
-    borderRadius: 999,
-    overflow: 'hidden',
-  },
-  glassLayer: {
-    flex: 1,
-    borderRadius: 999,
+    backgroundColor: colors.background,
   },
   tabBar: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: 999,
+    alignItems: 'center',
+    width: '100%',
     paddingHorizontal: 24,
-    paddingVertical: 16,
-    backgroundColor:
-      Platform.OS === 'ios'
-        ? 'rgba(255, 255, 255, 0.65)'
-        : 'rgba(20, 20, 20, 0.9)',
-    shadowColor: Platform.OS === 'ios' ? '#0f172a' : '#000',
-    shadowOpacity: Platform.OS === 'ios' ? 0.2 : 0.35,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 3,
+    paddingVertical: 10,
+    minHeight: 64,
+    borderRadius: 0,
+    backgroundColor: colors.card,
+    borderTopWidth: 1,
+    borderColor: 'rgba(15,23,42,0.08)',
+    elevation: 18,
+    shadowColor: colors.shadow,
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
   },
   tabItem: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 2,
-    paddingVertical: 6,
+    paddingVertical: 4,
+  },
+  iconWrapper: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 2,
   },
   tabLabel: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+    letterSpacing: 0.2,
   },
 });
