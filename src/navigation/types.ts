@@ -9,4 +9,5 @@ export type TabParamList = {
 export type RootStackParamList = {
   MainTabs: undefined;
   Settings: undefined;
+  InvoiceSummary: undefined;
 };

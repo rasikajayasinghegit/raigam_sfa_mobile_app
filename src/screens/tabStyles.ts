@@ -125,6 +125,58 @@ const createStyles = (colors: ColorPalette) =>
       fontWeight: '700',
       fontSize: 14,
     },
+    reportList: {
+      gap: 12,
+    },
+    reportItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 14,
+      borderRadius: 12,
+      backgroundColor: colors.surfaceSoft,
+      borderWidth: 1,
+      borderColor: colors.borderAlt,
+    },
+    reportIcon: {
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    reportCopy: {
+      flex: 1,
+      marginLeft: 12,
+      gap: 4,
+    },
+    reportTitle: {
+      fontSize: 15,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    reportMeta: {
+      fontSize: 12,
+      color: colors.textMuted,
+    },
+    reportRouteBadge: {
+      alignSelf: 'flex-start',
+      marginTop: 2,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 10,
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.borderMuted,
+    },
+    reportRouteText: {
+      fontSize: 11,
+      fontWeight: '700',
+      color: colors.textSecondary,
+      letterSpacing: 0.2,
+    },
+    reportChevron: {
+      marginLeft: 10,
+    },
     mutedCard: {
       backgroundColor: colors.surfaceMuted,
     },

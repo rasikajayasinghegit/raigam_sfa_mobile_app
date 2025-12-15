@@ -19,6 +19,7 @@ import { MainTabs } from './navigation/MainTabs';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { InvoiceListScreen } from './screens/InvoiceListScreen';
 import { RootStackParamList } from './navigation/types';
 import { ThemeProvider, useThemeMode } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
@@ -309,6 +310,9 @@ function AppBody(): React.JSX.Element {
         </RootStack.Screen>
         <RootStack.Screen name="Settings">
           {() => <SettingsScreen user={session} onLogout={logout} />}
+        </RootStack.Screen>
+        <RootStack.Screen name="InvoiceSummary">
+          {() => <InvoiceListScreen user={session} onLogout={logout} />}
         </RootStack.Screen>
       </RootStack.Navigator>
     );

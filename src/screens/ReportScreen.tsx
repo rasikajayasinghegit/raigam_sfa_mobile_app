@@ -1,36 +1,63 @@
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import {
-  ArrowSquareOut,
-  ChartLine,
-  ChartPieSlice,
-  FileCsv,
-  Funnel,
-  GearSix,
-} from 'phosphor-react-native';
+import { CaretRight, GearSix, Package, Receipt } from 'phosphor-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CompositeNavigationProp } from '@react-navigation/native';
 import { AppHeader } from '../components/AppHeader';
 import { ScreenBackground } from '../components/ScreenBackground';
 import { useTabStyles } from './tabStyles';
 import { LoginPayload } from '../services/auth';
 import { useOpenSettings } from '../hooks/useOpenSettings';
 import { useThemeMode } from '../context/ThemeContext';
+import { RootStackParamList, TabParamList } from '../navigation/types';
 
 type Props = {
   onLogout: () => Promise<void>;
   user: LoginPayload;
 };
 
+type ReportNav = CompositeNavigationProp<
+  BottomTabNavigationProp<TabParamList, 'Report'>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
+
 export function ReportScreen({ onLogout, user }: Props) {
   const tabStyles = useTabStyles();
-  const { colors, gradients } = useThemeMode();
+  const { colors } = useThemeMode();
   const openSettings = useOpenSettings();
+  const navigation = useNavigation<ReportNav>();
+  const reports = [
+    {
+      title: 'Invoice Summary Report',
+      route: 'InvoiceSummary',
+      description: 'Collections and payment status by period.',
+      icon: Receipt,
+      tint: colors.primary,
+      tintBg: colors.primarySoft,
+    },
+    {
+      title: 'Product Report',
+      route: 'ProductReport',
+      description: 'SKU performance, movement, and coverage.',
+      icon: Package,
+      tint: colors.info,
+      tintBg: colors.infoSoft,
+    },
+  ];
+
+  const handleReportPress = (route: string) => {
+    if (route === 'InvoiceSummary') {
+      navigation.navigate('InvoiceSummary');
+    }
+  };
   return (
     <SafeAreaView style={tabStyles.container}>
       <ScreenBackground />
       <AppHeader
-        title="Report"
+        title="Reports"
         hideBack
         onRightPress={() => onLogout()}
         secondaryRightIcon={
@@ -42,66 +69,53 @@ export function ReportScreen({ onLogout, user }: Props) {
         contentContainerStyle={tabStyles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        <LinearGradient colors={gradients.reportHero} style={tabStyles.hero}>
-          <View style={tabStyles.heroIcon}>
-            <ChartLine size={26} color={colors.primaryDark} weight="duotone" />
-          </View>
-          <View style={tabStyles.heroText}>
-            <Text style={tabStyles.heroTitle}>Reports & insights</Text>
-            <Text style={tabStyles.heroSubtitle}>
-              View performance and export summaries for {user.personalName || user.userName}.
-            </Text>
-          </View>
-        </LinearGradient>
-
         <View style={tabStyles.card}>
           <View style={tabStyles.cardHeader}>
-            <Text style={tabStyles.cardTitle}>Exports</Text>
-            <View style={tabStyles.badge}>
-              <Text style={tabStyles.badgeText}>CSV / PDF</Text>
-            </View>
+            <Text style={tabStyles.cardTitle}>Available reports</Text>
           </View>
-          <View style={tabStyles.actionRow}>
-            <TouchableOpacity style={tabStyles.actionButton} activeOpacity={0.9}>
-              <ChartPieSlice size={22} color={colors.primary} weight="duotone" />
-              <Text style={tabStyles.actionText}>Performance</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={tabStyles.actionButton} activeOpacity={0.9}>
-              <Funnel size={22} color={colors.primary} weight="duotone" />
-              <Text style={tabStyles.actionText}>Filters</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={tabStyles.actionButton} activeOpacity={0.9}>
-              <FileCsv size={22} color={colors.primary} weight="duotone" />
-              <Text style={tabStyles.actionText}>Export</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={tabStyles.card}>
-          <View style={tabStyles.cardHeader}>
-            <Text style={tabStyles.cardTitle}>Summary</Text>
-            <ArrowSquareOut size={18} color={colors.textMuted} weight="duotone" />
-          </View>
-          <View style={tabStyles.row}>
-            <Text style={tabStyles.rowLabel}>Total visits</Text>
-            <Text style={tabStyles.rowValue}>0</Text>
-          </View>
-          <View style={tabStyles.row}>
-            <Text style={tabStyles.rowLabel}>Total invoices</Text>
-            <Text style={tabStyles.rowValue}>0</Text>
-          </View>
-          <View style={tabStyles.row}>
-            <Text style={tabStyles.rowLabel}>Coverage</Text>
-            <Text style={tabStyles.rowValue}>0%</Text>
-          </View>
-        </View>
-
-        <View style={[tabStyles.card, tabStyles.mutedCard]}>
-          <Text style={tabStyles.cardTitle}>No data yet</Text>
           <Text style={tabStyles.cardSubtitle}>
-            Once you start your day and log activities, they will appear here with trend lines and
-            export options.
+            Export-ready snapshots built for finance and supply chain teams.
           </Text>
+
+          <View style={tabStyles.reportList}>
+            {reports.map(report => {
+              const Icon = report.icon;
+              return (
+                <TouchableOpacity
+                  key={report.route}
+                  activeOpacity={0.88}
+                  style={tabStyles.reportItem}
+                  onPress={() => handleReportPress(report.route)}
+                >
+                  <View
+                    style={[
+                      tabStyles.reportIcon,
+                      { backgroundColor: report.tintBg },
+                    ]}
+                  >
+                    <Icon size={22} color={report.tint} weight="duotone" />
+                  </View>
+                  <View style={tabStyles.reportCopy}>
+                    <Text style={tabStyles.reportTitle}>{report.title}</Text>
+                    <Text style={tabStyles.reportMeta}>
+                      {report.description}
+                    </Text>
+                    <View style={tabStyles.reportRouteBadge}>
+                      <Text style={tabStyles.reportRouteText}>
+                        {report.route}
+                      </Text>
+                    </View>
+                  </View>
+                  <CaretRight
+                    size={18}
+                    color={colors.textMuted}
+                    weight="bold"
+                    style={tabStyles.reportChevron}
+                  />
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
