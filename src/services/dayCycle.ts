@@ -11,6 +11,8 @@ export type DayActionOptions = {
   latitude?: number;
   longitude?: number;
   gpsStatus?: boolean;
+  startTimeOverride?: string;
+  dateOverride?: string;
 };
 
 function storageKey(userId: number) {
@@ -138,15 +140,22 @@ export async function endDay(
   options: DayActionOptions = {},
 ): Promise<DayCycleState> {
   const now = new Date();
-  const { state: current } = await loadDayCycle(userId);
+  const { state: stored } = await loadDayCycle(userId);
+  const current =
+    stored ||
+    (options.startTimeOverride
+      ? {
+          date: options.dateOverride ?? todayString(),
+          startTime: options.startTimeOverride,
+          endTime: null,
+        }
+      : null);
+
   if (!current?.startTime) {
     throw new Error('Start your day before ending it.');
   }
-   if (current.endTime) {
-    return current; // idempotent
-  }
   if (current.endTime) {
-    throw new Error('Day already ended.');
+    return current; // idempotent
   }
 
   const start = new Date(current.startTime);
