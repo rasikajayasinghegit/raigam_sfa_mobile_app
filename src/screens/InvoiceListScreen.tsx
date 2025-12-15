@@ -135,7 +135,7 @@ export function InvoiceListScreen({ onLogout, user }: Props) {
   };
 
   const handleApplyRange = async (showSuccessAlert = true) => {
-    if (!user?.territoryId) {
+    /*     if (!user?.territoryId) {
       Alert.alert('Missing territory', 'Territory ID is required to fetch invoices.');
       return;
     }
@@ -143,7 +143,7 @@ export function InvoiceListScreen({ onLogout, user }: Props) {
     if (startDate > endDate) {
       Alert.alert('Invalid range', 'Start date must be before end date.');
       return;
-    }
+    } */
 
     const start = formatDate(startDate);
     const end = formatDate(endDate);
@@ -162,61 +162,76 @@ export function InvoiceListScreen({ onLogout, user }: Props) {
         ? (payload as any).payload
         : [];
 
-      const normalized: Invoice[] = listSource.map((item: any, idx: number) => ({
-        id:
-          item?.invoiceNumber ||
-          item?.invoiceNo ||
-          item?.id ||
-          `INV-${idx + 1}`,
-        customer: item?.customerName || item?.outletName || 'Unknown outlet',
-        amount:
-          Number(
-            item?.totalValue ??
-              item?.invoiceValue ??
-              item?.actualValue ??
-              item?.bookingValue ??
-              item?.amount,
-          ) || 0,
-        invoiceNo: item?.invoiceNo || item?.invoiceNumber || String(item?.id || ''),
-        outletId: item?.outletId,
-        routeName: item?.routeName,
-        invoiceType: item?.invoiceType,
-        discountValue: Number(item?.totalDiscountValue ?? item?.discountValue) || 0,
-        freeValue: Number(item?.totalFreeValue ?? item?.freeValue) || 0,
-        valueLabel: item?.isActual ? 'Actual value' : 'Booking value',
-        bookingFinalValue:
-          Number(
-            item?.totalBookFinalValue ??
-              item?.bookingValue ??
+      const normalized: Invoice[] = listSource.map(
+        (item: any, idx: number) => ({
+          id:
+            item?.invoiceNumber ||
+            item?.invoiceNo ||
+            item?.id ||
+            `INV-${idx + 1}`,
+          customer: item?.customerName || item?.outletName || 'Unknown outlet',
+          amount:
+            Number(
               item?.totalValue ??
-              item?.amount,
-          ) || 0,
-        actualFinalValue:
-          Number(
-            item?.totalActualValue ??
-              item?.actualValue ??
-              item?.totalValue ??
-              item?.amount,
-          ) || 0,
-        status:
-          item?.status ||
-          (item?.isActual
-            ? 'Paid'
-            : item?.isLateDelivery
-            ? 'Overdue'
-            : 'Pending'),
-        date:
-          item?.invoiceDate ||
-          item?.createdDate ||
-          item?.date ||
-          formatDate(new Date()),
-        channel: item?.paymentType || item?.channel || 'N/A',
-        isBook: Boolean(item?.isBook),
-        isActual: Boolean(item?.isActual),
-        isLateDelivery: Boolean(item?.isLateDelivery),
-        unproductiveCalls:
-          Number(item?.unproductiveCalls ?? item?.unproductive_call) || 0,
-      }));
+                item?.invoiceValue ??
+                item?.actualValue ??
+                item?.bookingValue ??
+                item?.amount,
+            ) || 0,
+          invoiceNo:
+            item?.invoiceNo || item?.invoiceNumber || String(item?.id || ''),
+          outletId: item?.outletId,
+          routeName: item?.routeName,
+          invoiceType: item?.invoiceType,
+          discountValue:
+            Number(item?.totalDiscountValue ?? item?.discountValue) || 0,
+          freeValue: Number(item?.totalFreeValue ?? item?.freeValue) || 0,
+          valueLabel: item?.isActual ? 'Actual value' : 'Booking value',
+          bookingFinalValue:
+            Number(
+              item?.totalBookFinalValue ??
+                item?.bookingValue ??
+                item?.totalValue ??
+                item?.amount,
+            ) || 0,
+          actualFinalValue:
+            Number(
+              item?.totalActualValue ??
+                item?.actualValue ??
+                item?.totalValue ??
+                item?.amount,
+            ) || 0,
+          status:
+            item?.status ||
+            (item?.isActual
+              ? 'Paid'
+              : item?.isLateDelivery
+              ? 'Overdue'
+              : 'Pending'),
+          date:
+            item?.invoiceDate ||
+            item?.createdDate ||
+            item?.date ||
+            formatDate(new Date()),
+          channel: item?.paymentType || item?.channel || 'N/A',
+          isBook: Boolean(item?.isBook),
+          isActual: Boolean(item?.isActual),
+          isLateDelivery: Boolean(item?.isLateDelivery),
+          unproductiveCalls:
+            Number(item?.unproductiveCalls ?? item?.unproductive_call) || 0,
+        }),
+      );
+
+      if (normalized.length === 0) {
+        setInvoices([]);
+        if (showSuccessAlert) {
+          Alert.alert(
+            'No data',
+            'No invoices found for the selected date range.',
+          );
+        }
+        return;
+      }
 
       setInvoices(normalized);
 
@@ -228,7 +243,10 @@ export function InvoiceListScreen({ onLogout, user }: Props) {
         Alert.alert('Invoices fetched', summary.slice(0, 800));
       }
     } catch (error: any) {
-      Alert.alert('Fetch failed', error?.message || 'Unable to fetch invoices.');
+      Alert.alert(
+        'Fetch failed',
+        error?.message || 'Unable to fetch invoices.',
+      );
     } finally {
       setApplying(false);
     }
@@ -260,11 +278,7 @@ export function InvoiceListScreen({ onLogout, user }: Props) {
         <View style={styles.filterCard}>
           <View style={styles.filterHeader}>
             <View style={styles.filterTitleWrap}>
-              <FunnelSimple
-                size={18}
-                color={colors.primary}
-                weight="duotone"
-              />
+              <FunnelSimple size={18} color={colors.primary} weight="duotone" />
               <Text style={styles.filterTitle}>Filters</Text>
             </View>
           </View>
@@ -331,94 +345,97 @@ export function InvoiceListScreen({ onLogout, user }: Props) {
           </View>
         </View>
 
-        <View style={tabStyles.card}>
-          <View style={styles.headerRow}>
-            <View style={styles.headerLeft}>
-              <View style={styles.headerIcon}>
-                <Receipt size={24} color={colors.primary} weight="duotone" />
-              </View>
-              <View>
-                <Text style={styles.title}>Invoices summary</Text>
-                <Text style={styles.subtitle}>
-                  Recent documents for {user.territoryName || 'your territory'}
-                </Text>
+        {invoices.length > 0 && (
+          <View style={tabStyles.card}>
+            <View style={styles.headerRow}>
+              <View style={styles.headerLeft}>
+                <View style={styles.headerIcon}>
+                  <Receipt size={24} color={colors.primary} weight="duotone" />
+                </View>
+                <View>
+                  <Text style={styles.title}>Invoices summary</Text>
+                  <Text style={styles.subtitle}>
+                    Recent documents for{' '}
+                    {user.territoryName || 'your territory'}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
 
-          <View style={styles.metricGrid}>
-            {[
-              {
-                label: 'Total invoices',
-                value: stats.total,
-                color: colors.primary,
-                bg: colors.primarySoft,
-                border: colors.primary,
-              },
-              {
-                label: 'Total invoice value',
-                value: formatMoney(stats.totalValue),
-                color: colors.primary,
-                bg: colors.primarySoft,
-                border: colors.primary,
-              },
-              {
-                label: 'Bookings',
-                value: stats.bookings,
-                color: colors.warning,
-                bg: colors.warningSoft,
-                border: colors.warning,
-              },
-              {
-                label: 'Booking value',
-                value: formatMoney(stats.bookingValue),
-                color: colors.warning,
-                bg: colors.warningSoft,
-                border: colors.warning,
-              },
-              {
-                label: 'Actuals',
-                value: stats.actuals,
-                color: colors.success,
-                bg: colors.successSoft,
-                border: colors.success,
-              },
-              {
-                label: 'Actual value',
-                value: formatMoney(stats.actualValue),
-                color: colors.success,
-                bg: colors.successSoft,
-                border: colors.success,
-              },
-              {
-                label: 'Unproductive calls',
-                value: stats.unproductiveCalls,
-                color: colors.danger,
-                bg: colors.dangerSoft,
-                border: colors.danger,
-              },
-            ].map(item => {
-              return (
-                <View
-                  key={item.label}
-                  style={[
-                    styles.metricTile,
-                    { backgroundColor: item.bg, borderColor: item.border },
-                  ]}
-                >
-                  <View style={styles.metricCopy}>
-                    <Text style={[styles.metricLabel, { color: item.color }]}>
-                      {item.label}
-                    </Text>
-                    <Text style={[styles.metricValue, { color: item.color }]}>
-                      {item.value}
-                    </Text>
+            <View style={styles.metricGrid}>
+              {[
+                {
+                  label: 'Total invoices',
+                  value: stats.total,
+                  color: colors.primary,
+                  bg: colors.primarySoft,
+                  border: colors.primary,
+                },
+                {
+                  label: 'Total invoice value',
+                  value: formatMoney(stats.totalValue),
+                  color: colors.primary,
+                  bg: colors.primarySoft,
+                  border: colors.primary,
+                },
+                {
+                  label: 'Bookings',
+                  value: stats.bookings,
+                  color: colors.warning,
+                  bg: colors.warningSoft,
+                  border: colors.warning,
+                },
+                {
+                  label: 'Booking value',
+                  value: formatMoney(stats.bookingValue),
+                  color: colors.warning,
+                  bg: colors.warningSoft,
+                  border: colors.warning,
+                },
+                {
+                  label: 'Actuals',
+                  value: stats.actuals,
+                  color: colors.success,
+                  bg: colors.successSoft,
+                  border: colors.success,
+                },
+                {
+                  label: 'Actual value',
+                  value: formatMoney(stats.actualValue),
+                  color: colors.success,
+                  bg: colors.successSoft,
+                  border: colors.success,
+                },
+                {
+                  label: 'Unproductive calls',
+                  value: stats.unproductiveCalls,
+                  color: colors.danger,
+                  bg: colors.dangerSoft,
+                  border: colors.danger,
+                },
+              ].map(item => {
+                return (
+                  <View
+                    key={item.label}
+                    style={[
+                      styles.metricTile,
+                      { backgroundColor: item.bg, borderColor: item.border },
+                    ]}
+                  >
+                    <View style={styles.metricCopy}>
+                      <Text style={[styles.metricLabel, { color: item.color }]}>
+                        {item.label}
+                      </Text>
+                      <Text style={[styles.metricValue, { color: item.color }]}>
+                        {item.value}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              );
-            })}
+                );
+              })}
+            </View>
           </View>
-        </View>
+        )}
 
         <View style={tabStyles.card}>
           <View style={tabStyles.cardHeader}>
@@ -428,6 +445,10 @@ export function InvoiceListScreen({ onLogout, user }: Props) {
 
           <View style={styles.invoiceList}>
             {invoices.map(invoice => {
+              const displayValue = invoice.isActual
+                ? invoice.actualFinalValue ?? invoice.amount
+                : invoice.bookingFinalValue ?? invoice.amount;
+
               return (
                 <TouchableOpacity
                   key={invoice.id}
@@ -446,7 +467,12 @@ export function InvoiceListScreen({ onLogout, user }: Props) {
                       {formatInvoiceNumber(invoice.invoiceNo || invoice.id)}
                     </Text>
                     <View style={styles.pillRow}>
-                      <View style={[styles.pillSoft, { backgroundColor: colors.surfaceSoft }]}>
+                      <View
+                        style={[
+                          styles.pillSoft,
+                          { backgroundColor: colors.surfaceSoft },
+                        ]}
+                      >
                         <Text style={[styles.pillText, { color: colors.text }]}>
                           {invoice.invoiceType || 'Invoice'}
                         </Text>
@@ -475,7 +501,11 @@ export function InvoiceListScreen({ onLogout, user }: Props) {
                             },
                           ]}
                         >
-                          {invoice.isActual ? 'Actual' : invoice.isBook ? 'Booking' : 'Pending'}
+                          {invoice.isActual
+                            ? 'Actual'
+                            : invoice.isBook
+                            ? 'Booking'
+                            : 'Pending'}
                         </Text>
                       </View>
                     </View>
@@ -490,15 +520,21 @@ export function InvoiceListScreen({ onLogout, user }: Props) {
                     </View>
                     <View style={styles.infoRow}>
                       <Text style={styles.label}>Route</Text>
-                      <Text style={styles.value}>{invoice.routeName || 'N/A'}</Text>
+                      <Text style={styles.value}>
+                        {invoice.routeName || 'N/A'}
+                      </Text>
                     </View>
                     <View style={styles.infoRow}>
                       <Text style={styles.label}>Discount</Text>
-                      <Text style={styles.value}>{formatMoney(invoice.discountValue || 0)}</Text>
+                      <Text style={styles.value}>
+                        {formatMoney(invoice.discountValue || 0)}
+                      </Text>
                     </View>
                     <View style={styles.infoRow}>
                       <Text style={styles.label}>Free issue</Text>
-                      <Text style={styles.value}>{formatMoney(invoice.freeValue || 0)}</Text>
+                      <Text style={styles.value}>
+                        {formatMoney(invoice.freeValue || 0)}
+                      </Text>
                     </View>
                     <View style={styles.infoRow}>
                       <Text style={styles.label}>Date</Text>
@@ -508,8 +544,16 @@ export function InvoiceListScreen({ onLogout, user }: Props) {
 
                   <View style={styles.valueFooter}>
                     <View style={styles.valueLeft}>
-                      <Text style={styles.label}>{invoice.valueLabel || 'Value'}</Text>
-                      <Text style={styles.valueStrong}>{formatMoney(invoice.amount)}</Text>
+                      <Text style={styles.label}>
+                        {invoice.valueLabel || 'Value'}
+                      </Text>
+                      <Text style={styles.valueStrong}>
+                        {formatMoney(
+                          Number.isFinite(displayValue as number)
+                            ? (displayValue as number)
+                            : 0,
+                        )}
+                      </Text>
                     </View>
                   </View>
                 </TouchableOpacity>
