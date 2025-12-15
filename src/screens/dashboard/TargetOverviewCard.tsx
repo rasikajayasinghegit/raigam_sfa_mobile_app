@@ -23,12 +23,19 @@ export function TargetOverviewCard({
   progressPercent,
   hasTargetData,
 }: Props) {
-  const { colors } = useThemeMode();
+  const { colors, mode } = useThemeMode();
   const styles = useThemedStyles(createStyles);
+  const isDark = mode === 'dark';
+
+  const gradientColors = isDark
+    ? [colors.surfaceAlt, colors.surfaceMuted]
+    : [colors.primary, colors.accent];
+
+  const textOnCard = isDark ? colors.text : colors.white;
 
   return (
     <LinearGradient
-      colors={[colors.primary, colors.accent]}
+      colors={gradientColors}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.targetCard}
@@ -36,38 +43,54 @@ export function TargetOverviewCard({
       <View style={styles.targetHeader}>
         <View style={styles.sectionTitleWrap}>
           <View style={[styles.sectionIcon, styles.sectionIconOnGradient]}>
-            <Target size={20} color={colors.white} weight="duotone" />
+            <Target size={20} color={textOnCard} weight="duotone" />
           </View>
           <View>
-            <Text style={styles.targetTitle}>Target overview</Text>
-            <Text style={styles.targetSubtitle}>
+            <Text style={[styles.targetTitle, { color: textOnCard }]}>
+              Target overview
+            </Text>
+            <Text
+              style={[styles.targetSubtitle, { color: textOnCard, opacity: 0.8 }]}
+            >
               Territory performance snapshot
             </Text>
           </View>
         </View>
         <View style={styles.targetBadge}>
-          <Text style={styles.targetBadgeText}>Territory</Text>
-          <Text style={styles.targetBadgeValue}>#{territoryId || '-'}</Text>
+          <Text style={[styles.targetBadgeText, { color: textOnCard }]}>
+            Territory
+          </Text>
+          <Text style={[styles.targetBadgeValue, { color: textOnCard }]}>
+            #{territoryId || '-'}
+          </Text>
         </View>
       </View>
 
       <View style={styles.targetStatFull}>
-        <Text style={styles.targetLabel}>Territory Target</Text>
-        <Text style={styles.targetValue}>
+        <Text style={[styles.targetLabel, { color: textOnCard, opacity: 0.85 }]}>
+          Territory Target
+        </Text>
+        <Text style={[styles.targetValue, { color: textOnCard }]}>
           {formatCurrency(metrics.territoryTarget, { fallback: '--' })}
         </Text>
       </View>
 
       <View style={styles.targetStatsRow}>
         <View style={styles.targetStat}>
-          <Text style={styles.targetLabel}>My Achievement</Text>
-          <Text style={styles.targetValue}>
+          <Text style={[styles.targetLabel, { color: textOnCard, opacity: 0.85 }]}>
+            My Achievement
+          </Text>
+          <Text style={[styles.targetValue, { color: textOnCard }]}>
             {formatCurrency(metrics.achievementValue, { fallback: '--' })}
           </Text>
         </View>
         <View style={styles.targetStat}>
-          <Text style={styles.targetLabel}>Achievement %</Text>
-          <Text style={styles.targetValue}>{percentageText}</Text>
+          <Text style={[styles.targetLabel, { color: textOnCard, opacity: 0.85 }]}>
+            Achievement %
+          </Text>
+          <Text style={[styles.targetValue, { color: textOnCard }]}>
+            {percentageText}
+          </Text>
         </View>
       </View>
       <View style={styles.progressBar}>
@@ -80,7 +103,7 @@ export function TargetOverviewCard({
           ]}
         />
       </View>
-      <Text style={styles.progressHint}>
+      <Text style={[styles.progressHint, { color: textOnCard, opacity: 0.85 }]}>
         {hasTargetData
           ? 'Keep pushing to hit the target and close strong.'
           : 'Target data not available yet. Sync to refresh.'}
@@ -125,13 +148,10 @@ const createStyles = (colors: ColorPalette) =>
       borderColor: 'rgba(255,255,255,0.25)',
     },
     targetTitle: {
-      color: colors.white,
       fontSize: 17,
       fontWeight: '700',
     },
     targetSubtitle: {
-      color: colors.white,
-      opacity: 0.85,
       marginTop: 2,
       fontSize: 13,
     },
@@ -144,12 +164,9 @@ const createStyles = (colors: ColorPalette) =>
       gap: 2,
     },
     targetBadgeText: {
-      color: colors.white,
-      opacity: 0.7,
       fontSize: 12,
     },
     targetBadgeValue: {
-      color: colors.white,
       fontWeight: '700',
       fontSize: 14,
     },
@@ -173,12 +190,9 @@ const createStyles = (colors: ColorPalette) =>
       gap: 6,
     },
     targetLabel: {
-      color: colors.white,
-      opacity: 0.8,
       fontSize: 12,
     },
     targetValue: {
-      color: colors.white,
       fontSize: 18,
       fontWeight: '700',
       letterSpacing: 0.2,
@@ -195,8 +209,6 @@ const createStyles = (colors: ColorPalette) =>
       borderRadius: 999,
     },
     progressHint: {
-      color: colors.white,
-      opacity: 0.9,
       fontSize: 12,
     },
   });
